@@ -34,12 +34,10 @@ body {
 }
 
 .container {
-    max-width: 414px;
-    margin: 0 auto;
+    width: 100%;
     background: var(--bg-secondary);
     min-height: 100vh;
     position: relative;
-    box-shadow: var(--shadow-md);
 }
 
 .header {
@@ -996,14 +994,8 @@ body {
 }
 
 @media (min-width: 768px) {
-    .container {
-        max-width: 768px;
-    }
     .category-grid {
         grid-template-columns: repeat(4, 1fr);
-    }
-    .bottom-nav {
-        max-width: 768px;
     }
     .modal-content {
         max-width: 768px;
