@@ -64,11 +64,8 @@ body {
     margin-bottom: 16px;
 }
 
-.logo {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--primary-color);
-    text-shadow: 0 2px 4px rgba(49, 130, 206, 0.2);
+.logo img {
+    width: 5vw;
 }
 
 .location-btn {
