@@ -65,7 +65,8 @@ body {
 }
 
 .logo img {
-    width: 5vw;
+    width: 100px;
+    height: 100px;
 }
 
 .location-btn {
