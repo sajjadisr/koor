@@ -70,6 +70,8 @@ Set these secrets in your GitHub repository settings:
   - Generate with: `firebase login:ci`
   - Or: `firebase login:ci --no-localhost`
 
+**Note**: This project requires Node.js 20+ due to Firebase and other dependencies.
+
 #### Optional Environment Secrets:
 - `STAGING_FIREBASE_TOKEN`: Separate token for staging
 - `PRODUCTION_FIREBASE_TOKEN`: Separate token for production
