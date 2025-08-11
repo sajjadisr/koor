@@ -1,0 +1,124 @@
+name: Kooreh CI/CD
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - 'koor/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - 'koor/**'
+      - '.github/workflows/**'
+
+env:
+  NODE_VERSION: '18'
+  SOURCE_DIR: './koor'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        path: koor
+    
+    - name: Set working directory
+      run: |
+        echo "SOURCE_DIR=$SOURCE_DIR" >> $GITHUB_ENV
+        echo "Working in directory: $SOURCE_DIR"
+        pwd
+        ls -la
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.SOURCE_DIR }}/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm ci
+    
+    - name: Run tests
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm test
+    
+    - name: Run linting
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm run lint
+    
+    - name: Build project
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm run build
+
+  deploy-staging:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        path: koor
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.SOURCE_DIR }}/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm ci
+    
+    - name: Build project
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm run build
+    
+    - name: Deploy to staging
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: |
+        echo "Deploying to staging environment..."
+        # Add your staging deployment commands here
+        # Example: npm run deploy:staging
+
+  deploy-production:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        path: koor
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.SOURCE_DIR }}/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm ci
+    
+    - name: Build project
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm run build
+    
+    - name: Deploy to production
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: |
+        echo "Deploying to production environment..."
+        # Add your production deployment commands here
+        # Example: npm run deploy:production

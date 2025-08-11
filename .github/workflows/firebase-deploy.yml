@@ -1,0 +1,100 @@
+name: Firebase Deploy
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'koor/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy to environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  NODE_VERSION: '18'
+  SOURCE_DIR: './koor'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        path: koor
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.SOURCE_DIR }}/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm ci
+    
+    - name: Install Firebase CLI
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm install -g firebase-tools
+    
+    - name: Build project
+      working-directory: ${{ env.SOURCE_DIR }}
+      run: npm run build
+    
+    - name: Deploy to Firebase
+      working-directory: ${{ env.SOURCE_DIR }}
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          ENV="${{ github.event.inputs.environment }}"
+        else
+          ENV="production"
+        fi
+        
+        echo "Deploying to Firebase environment: $ENV"
+        
+        # Set Firebase project based on environment
+        if [ "$ENV" = "staging" ]; then
+          firebase use staging --token $FIREBASE_TOKEN
+        else
+          firebase use production --token $FIREBASE_TOKEN
+        fi
+        
+        # Deploy all Firebase services
+        firebase deploy --token $FIREBASE_TOKEN --non-interactive
+        
+        echo "Firebase deployment completed successfully!"
+    
+    - name: Deploy to Firebase Hosting
+      working-directory: ${{ env.SOURCE_DIR }}
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        echo "Deploying to Firebase Hosting..."
+        firebase deploy --only hosting --token $FIREBASE_TOKEN --non-interactive
+    
+    - name: Deploy Cloud Functions
+      working-directory: ${{ env.SOURCE_DIR }}
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        echo "Deploying Cloud Functions..."
+        firebase deploy --only functions --token $FIREBASE_TOKEN --non-interactive
+    
+    - name: Deploy Firestore Rules
+      working-directory: ${{ env.SOURCE_DIR }}
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        echo "Deploying Firestore Rules..."
+        firebase deploy --only firestore:rules --token $FIREBASE_TOKEN --non-interactive
