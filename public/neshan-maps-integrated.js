@@ -1,4 +1,4 @@
-// Neshan Maps Integration for Koor (هکور)
+// Neshan Maps Integration for Koor (کوره)
 // Integrated with existing city selection system
 
 class KoorNeshanMaps {

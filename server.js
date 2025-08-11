@@ -63,8 +63,10 @@ app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Serve static files from the 'public' directory
-app.use(express.static(join(__dirname, 'public')));
+// Serve static files from the built 'dist' directory (production) or 'public' directory (development)
+const isProduction = process.env.NODE_ENV === 'production';
+const staticPath = isProduction ? join(__dirname, 'dist') : join(__dirname, 'public');
+app.use(express.static(staticPath));
 
 // Google API Configuration
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || 'YOUR_GOOGLE_API_KEY_HERE';
@@ -374,13 +376,14 @@ app.get('/api/places/nearby', async (req, res) => {
 
 // Serve the main index.html file for the root URL
 app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'public/index.html'));
+  const indexPath = isProduction ? join(__dirname, 'dist/index.html') : join(__dirname, 'public/index.html');
+  res.sendFile(indexPath);
 });
 
 // Start the server
 app.listen(PORT, () => {
   console.log(`[SERVER] Koor backend server listening at http://localhost:${PORT}`);
-  console.log('[INFO] Frontend will be available at http://localhost:3000');
+  console.log('[INFO] Frontend will be available at http://localhost:3001');
   console.log('[AUTH] Please ensure your Firebase service account has "Cloud Datastore User" or "Editor" roles.');
   console.log(`[HEALTH] Health check: http://localhost:${PORT}/api/health`);
   console.log(`[API] Google Reviews API: http://localhost:${PORT}/api/places/`);

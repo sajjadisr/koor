@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Koor - Best Place Finder Platform for Iran</title>
+  <meta name="description" content="Discover the best places in Iran with Koor - your trusted platform for finding restaurants, attractions, and local businesses.">
+  <meta name="keywords" content="Iran, places, restaurants, attractions, local businesses, Koor">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Koor - Best Place Finder Platform for Iran">
+  <meta property="og:description" content="Discover the best places in Iran with Koor">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://koor.ir">
+  
+  <!-- Preload critical resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <a href="/" class="logo">Koor</a>
+        <nav>
+          <ul class="nav-menu">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#places">Places</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Hero Section -->
+      <section id="home" class="hero-section">
+        <div class="card text-center">
+          <h1 class="hero-title">Welcome to Koor</h1>
+          <p class="hero-subtitle">Discover the best places in Iran</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="searchBtn">Search Places</button>
+            <button class="btn btn-secondary" id="exploreBtn">Explore</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search Section -->
+      <section id="search" class="search-section">
+        <div class="card">
+          <h2 class="card-title">Find Your Perfect Place</h2>
+          <form id="searchForm" class="search-form">
+            <div class="form-group">
+              <label for="location" class="form-label">Location</label>
+              <input type="text" id="location" class="form-input" placeholder="Enter city or area" required>
+            </div>
+            <div class="form-group">
+              <label for="category" class="form-label">Category</label>
+              <select id="category" class="form-input">
+                <option value="">All Categories</option>
+                <option value="restaurant">Restaurants</option>
+                <option value="cafe">Cafes</option>
+                <option value="hotel">Hotels</option>
+                <option value="attraction">Attractions</option>
+                <option value="shopping">Shopping</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Results Section -->
+      <section id="results" class="results-section" style="display: none;">
+        <div class="card">
+          <h2 class="card-title">Search Results</h2>
+          <div id="resultsContainer" class="results-container">
+            <!-- Results will be populated here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <section id="about" class="about-section">
+        <div class="card">
+          <h2 class="card-title">About Koor</h2>
+          <p>Koor is your trusted platform for discovering the best places in Iran. Whether you're looking for restaurants, cafes, hotels, or attractions, we provide comprehensive information and reviews to help you make the best choices.</p>
+          <div class="features-grid">
+            <div class="feature">
+              <h3>Comprehensive Database</h3>
+              <p>Access thousands of places across Iran with detailed information.</p>
+            </div>
+            <div class="feature">
+              <h3>Real Reviews</h3>
+              <p>Read authentic reviews from real visitors and customers.</p>
+            </div>
+            <div class="feature">
+              <h3>Easy Navigation</h3>
+              <p>Find what you're looking for quickly with our intuitive search.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p>&copy; 2024 Koor. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Loading indicator -->
+  <div id="loading" class="loading" style="display: none;">
+    <div class="loading-spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

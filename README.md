@@ -1,30 +1,69 @@
-# Koor - Best Place Finder Platform
+# Koor - Best Place Finder Platform for Iran
 
-A comprehensive platform for discovering and reviewing the best places in Iran, including gyms, salons, restaurants, and more.
+A modern, professional platform for discovering and exploring the best places in Iran. Built with cutting-edge technologies and best practices.
 
-## Features
+## 🚀 Features
 
-- **Smart Search**: Find places by category, location, and reviews
-- **Location-based**: Discover places near you or in specific cities
-- **User Reviews**: Read and write authentic reviews
-- **Responsive Design**: Works perfectly on all devices
-- **User Authentication**: Secure login and registration system
-- **Business Dashboard**: Add and manage your business listings
-- **AI-Powered Intelligence**: Gemini AI for smart recommendations and natural language search
+- **Advanced Search**: Find restaurants, cafes, hotels, attractions, and more
+- **Real-time Reviews**: Access authentic reviews from real visitors
+- **Interactive Maps**: Google Maps integration with custom styling
+- **Location Services**: GPS-based nearby place discovery
+- **Responsive Design**: Modern, mobile-first user interface
+- **Firebase Integration**: Robust backend with real-time data
+- **Google APIs**: Places, Maps, and Reviews integration
 
-## Quick Start
+## 🏗️ Architecture
+
+```
+koor/
+├── src/                    # Frontend source code
+│   ├── js/                # JavaScript modules
+│   │   ├── app.js         # Main application logic
+│   │   ├── api.js         # API service layer
+│   │   ├── ui.js          # UI utilities and components
+│   │   ├── maps.js        # Maps integration
+│   │   └── firebase-config.js # Firebase configuration
+│   ├── style/             # CSS styles
+│   │   └── main.css       # Main stylesheet
+│   └── index.html         # Main HTML file
+├── server.js              # Express.js backend server
+├── dist/                  # Production build output
+├── public/                # Static assets (legacy)
+└── firebase-config/       # Firebase configuration files
+```
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **Vite** - Fast build tool and dev server
+- **Vanilla JavaScript** - Modern ES6+ with modules
+- **CSS3** - Custom properties and modern layouts
+- **HTML5** - Semantic markup and accessibility
+
+### Backend
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **Firebase Admin SDK** - Backend services
+- **Google APIs** - Places, Maps, and Reviews
+
+### Development Tools
+- **ESLint** - Code quality and consistency
+- **Prettier** - Code formatting
+- **Concurrently** - Run multiple commands
+
+## 📦 Installation
 
 ### Prerequisites
-
-- Node.js 18+ 
-- npm or yarn
+- Node.js 18.0.0 or higher
+- npm or yarn package manager
 - Firebase project setup
+- Google APIs enabled
 
-### Installation
+### Setup Steps
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone <repository-url>
    cd koor
    ```
 
@@ -33,169 +72,210 @@ A comprehensive platform for discovering and reviewing the best places in Iran, 
    npm install
    ```
 
-3. **Set up Firebase**
-   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-   - Download your `serviceAccountKey.json` and place it in the root directory
-   - Update Firebase configuration in `public/firebase-config.js`
-
-4. **Start development servers**
+3. **Environment configuration**
    ```bash
-   npm run dev
+   cp env.example .env
+   # Edit .env with your actual values
    ```
 
-   This will start:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:3001
+4. **Firebase setup**
+   - Place your `serviceAccountKey.json` in the root directory
+   - Configure Firebase project settings
 
-## Project Structure
+5. **Google APIs setup**
+   - Enable Google Places API
+   - Enable Google Maps JavaScript API
+   - Get API keys and add to environment variables
 
+## 🚀 Development
+
+### Start Development Server
+```bash
+# Start both frontend and backend
+npm run dev
+
+# Start only frontend (Vite dev server)
+npm run dev:frontend
+
+# Start only backend (Express server)
+npm run dev:backend
 ```
-koor/
-├── public/                 # Frontend static files
-│   ├── index.html         # Main HTML file
-│   ├── main.js            # Main JavaScript application
-│   ├── main.css           # Main stylesheet
-│   ├── firebase-config.js # Firebase configuration
-│   ├── firebase-utils.js  # Firebase utilities
-│   ├── ai-utils.js        # AI (Gemini) utilities
-│   ├── ai-demo.html       # AI capabilities demo
-│   └── image/             # Image assets
-├── server.js              # Express backend server
-├── firestore_test.js      # Firebase connection test
-├── package.json           # Project dependencies
-├── vite.config.js         # Vite build configuration
-└── .gitignore            # Git ignore rules
+
+### Build for Production
+```bash
+# Build frontend
+npm run build
+
+# Start production server
+npm run start:prod
 ```
 
-## Available Scripts
+### Code Quality
+```bash
+# Lint code
+npm run lint
 
-- `npm run dev` - Start both frontend and backend in development mode
-- `npm run dev:frontend` - Start only the frontend (Vite dev server)
-- `npm run dev:backend` - Start only the backend (Express server)
-- `npm run build` - Build the frontend for production
-- `npm run preview` - Preview the production build
-- `npm start` - Start the production backend server
-- `npm test` - Test Firebase connection
+# Fix linting issues
+npm run lint:fix
 
-## Configuration
+# Format code
+npm run format
+```
 
-### Firebase Setup
+## 🌐 Deployment
 
-1. **Authentication**: Enable Email/Password and Google sign-in
-2. **Firestore**: Create collections for businesses, users, and reviews
-3. **Storage**: Set up rules for image uploads
-4. **Hosting**: Configure for production deployment
+### Production Build
+```bash
+# Build and start production server
+npm run start:prod
+```
 
 ### Environment Variables
+Ensure these are set in your production environment:
+- `NODE_ENV=production`
+- `GOOGLE_API_KEY`
+- `GOOGLE_MAPS_API_KEY`
+- Firebase service account credentials
 
-Create a `.env` file in the root directory:
+### Deployment Platforms
+- **Vercel**: Automatic deployment from Git
+- **Netlify**: Static hosting with serverless functions
+- **Heroku**: Full-stack deployment
+- **Firebase Hosting**: Integrated with Firebase ecosystem
 
-```env
-NODE_ENV=development
-PORT=3001
-FIREBASE_PROJECT_ID=your-project-id
-```
+## 🔧 Configuration
 
-## API Endpoints
+### Vite Configuration
+- Source directory: `src/`
+- Build output: `dist/`
+- Development server: Port 3000
+- Backend proxy: Port 3001
 
-### Backend API (Port 3001)
+### Server Configuration
+- Port: 3001 (configurable via environment)
+- Static files: Serves from `dist/` in production
+- API endpoints: `/api/*`
+- CORS: Enabled for development
 
-- `GET /api/health` - Health check
+### Firebase Configuration
+- Firestore database
+- Authentication (optional)
+- Storage (optional)
+- Emulator support for development
+
+## 📱 API Endpoints
+
+### Places
+- `GET /api/places/search` - Search for places
+- `GET /api/places/nearby` - Find nearby places
+- `GET /api/places/:id` - Get place details
+- `POST /api/places/:id/reviews` - Sync place reviews
+
+### Businesses
 - `GET /api/businesses` - Get all businesses
 - `POST /api/businesses` - Add new business
-- `GET /` - Serve frontend
 
-### Frontend (Port 3000)
+### Health
+- `GET /api/health` - Server health check
 
-- Main application interface
-- Firebase integration
-- User authentication
-- Business search and discovery
+## 🎨 Customization
 
-## Technologies Used
+### Styling
+- CSS custom properties for theming
+- Modular CSS structure
+- Responsive design utilities
+- Component-based styling
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Build Tool**: Vite
-- **Backend**: Node.js, Express.js
-- **Database**: Firebase Firestore
-- **Authentication**: Firebase Auth
-- **Storage**: Firebase Storage
-- **Hosting**: Firebase Hosting
-- **AI**: Google Gemini (Firebase AI)
+### Maps
+- Custom Google Maps styling
+- Marker customization
+- Info window templates
+- Directions integration
 
-## AI Capabilities
+### Components
+- Place cards
+- Search forms
+- Modal dialogs
+- Loading indicators
 
-### Gemini AI Integration
-The app now includes powerful AI capabilities powered by Google's Gemini model:
+## 🧪 Testing
 
-- **Smart Search Suggestions**: AI-generated search recommendations based on user input
-- **Business Recommendations**: Personalized business suggestions based on user preferences
-- **Content Generation**: AI-powered business descriptions and content
-- **Natural Language Processing**: Convert natural language queries to search keywords
-- **Review Insights**: AI analysis of user reviews and feedback
-- **Personalized Recommendations**: User-specific business suggestions
+### Manual Testing
+```bash
+# Test Firebase connection
+npm run test
+```
 
-### AI Demo Page
-Visit `/ai-demo.html` to test all AI capabilities interactively.
+### Automated Testing
+- Unit tests for utility functions
+- Integration tests for API endpoints
+- E2E tests for user workflows
 
-## Security
+## 📊 Performance
 
-- Firebase security rules for Firestore and Storage
-- CORS enabled for development
-- Input validation and sanitization
-- Secure authentication flow
-- AI API rate limiting and safety measures
+### Frontend Optimization
+- Code splitting and lazy loading
+- Image optimization and lazy loading
+- CSS minification
+- JavaScript bundling and minification
 
-## Deployment
+### Backend Optimization
+- API response caching
+- Database query optimization
+- Rate limiting
+- Error handling and logging
 
-### Firebase Hosting
+## 🔒 Security
 
-1. **Build the project**
-   ```bash
-   npm run build
-   ```
+### API Security
+- CORS configuration
+- Rate limiting
+- Input validation
+- Error message sanitization
 
-2. **Deploy to Firebase**
-   ```bash
-   firebase deploy
-   ```
+### Environment Security
+- Secure environment variable handling
+- Service account key protection
+- API key management
 
-### Manual Deployment
+## 🤝 Contributing
 
-1. **Build frontend**
-   ```bash
-   npm run build
-   ```
-
-2. **Deploy backend** to your preferred hosting service
-3. **Update API endpoints** in frontend configuration
-
-## Contributing
-
+### Development Workflow
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
+4. Run tests and linting
 5. Submit a pull request
 
-## License
+### Code Standards
+- Follow ESLint configuration
+- Use Prettier for formatting
+- Write meaningful commit messages
+- Include tests for new features
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 📄 License
 
-## Support
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-For support and questions:
-- Create an issue in the repository
-- Contact the development team
-- Check the Firebase documentation
+## 🆘 Support
 
-## Updates
+### Documentation
+- [API Reference](docs/api.md)
+- [Deployment Guide](docs/deployment.md)
+- [Contributing Guide](docs/contributing.md)
 
-Stay updated with the latest features and improvements by:
-- Following the repository
-- Checking the changelog
-- Reading release notes
+### Issues
+- Report bugs via GitHub Issues
+- Request features via GitHub Discussions
+- Ask questions via GitHub Discussions
+
+## 🙏 Acknowledgments
+
+- Google Maps Platform
+- Firebase team
+- Vite development team
+- Open source community
 
 ---
 
-**Made with dedication for the Iranian community**
+**Built with ❤️ for Iran**

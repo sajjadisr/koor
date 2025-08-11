@@ -11,7 +11,12 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "node server.js",
+    "start:prod": "npm run build && NODE_ENV=production node server.js",
+    "start:dev": "NODE_ENV=development node server.js",
     "test": "node firestore_test.js",
+    "lint": "eslint src --ext .js",
+    "lint:fix": "eslint src --ext .js --fix",
+    "format": "prettier --write src/**/*.{js,css,html}",
     "firebase:deploy": "firebase deploy",
     "firebase:deploy:hosting": "firebase deploy --only hosting",
     "firebase:deploy:functions": "firebase deploy --only functions",
@@ -33,7 +38,9 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "vite": "^7.1.0",
-    "firebase-tools": "^14.0.0"
+    "firebase-tools": "^14.0.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5"
   },
   "engines": {
     "node": ">=18.0.0"
