@@ -1,9 +1,9 @@
 {
-  "name": "koor",
+  "name": "kooreh",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Koor - Best place finder platform for Iran",
+  "description": "Kooreh - Best place finder platform for Iran",
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "vite",

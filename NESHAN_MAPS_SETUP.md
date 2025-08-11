@@ -1,6 +1,6 @@
 # Neshan Maps Integration Setup
 
-This guide will help you integrate Neshan Maps into your project. Neshan is an Iranian mapping platform that provides detailed maps of Iran and surrounding regions.
+This guide will help you integrate Neshan Maps into your Kooreh project. Neshan is an Iranian mapping platform that provides detailed maps of Iran and surrounding regions.
 
 ## Quick Start
 

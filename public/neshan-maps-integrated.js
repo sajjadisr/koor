@@ -1,7 +1,7 @@
-// Neshan Maps Integration for Koor (کوره)
+// Neshan Maps Integration for Kooreh (کوره)
 // Integrated with existing city selection system
 
-class KoorNeshanMaps {
+class KoorehNeshanMaps {
     constructor(apiKey) {
         this.apiKey = apiKey;
         this.map = null;
@@ -128,12 +128,12 @@ class KoorNeshanMaps {
                         <p>مختصات: ${this.cityCoordinates[cityName]?.join(', ')}</p>
                     </div>
                     <div class="city-info-actions">
-                        <button onclick="koorMaps.searchNearbyPlaces()" class="city-action-btn">
-                            🔍 جستجوی مکان‌های نزدیک
-                        </button>
-                        <button onclick="koorMaps.showCityBoundaries()" class="city-action-btn">
-                            🏙 نمایش محدوده شهر
-                        </button>
+                                <button onclick="koorehMaps.searchNearbyPlaces()" class="city-action-btn">
+            🔍 جستجوی مکان‌های نزدیک
+        </button>
+        <button onclick="koorehMaps.showCityBoundaries()" class="city-action-btn">
+            🏙 نمایش محدوده شهر
+        </button>
                     </div>
                 `;
                 return container;
@@ -349,12 +349,12 @@ class KoorNeshanMaps {
 }
 
 // Global instance
-let koorMaps;
+let koorehMaps;
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Koor Neshan Maps
-    koorMaps = new KoorNeshanMaps('YOUR_NESHAN_API_KEY');
+    // Initialize Kooreh Neshan Maps
+    koorehMaps = new KoorehNeshanMaps('YOUR_NESHAN_API_KEY');
     
     // Override the existing selectCity function to integrate with maps
     const originalSelectCity = window.selectCity;
@@ -364,8 +364,8 @@ document.addEventListener('DOMContentLoaded', function() {
             originalSelectCity(cityName);
             
             // Update map if available
-            if (koorMaps && koorMaps.map) {
-                koorMaps.changeCity(cityName);
+                if (koorehMaps && koorehMaps.map) {
+        koorehMaps.changeCity(cityName);
             }
         };
     }
@@ -373,8 +373,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Export for use in other files
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = KoorNeshanMaps;
+    module.exports = KoorehNeshanMaps;
 } else if (typeof window !== 'undefined') {
-    window.KoorNeshanMaps = KoorNeshanMaps;
-    window.koorMaps = koorMaps;
+    window.KoorehNeshanMaps = KoorehNeshanMaps;
+    window.koorehMaps = koorehMaps;
 }

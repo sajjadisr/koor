@@ -1,8 +1,8 @@
 @echo off
-REM Koor Deployment Script for Windows
-REM This script builds and deploys the Koor application
+REM Kooreh Deployment Script for Windows
+REM This script builds and deploys the Kooreh application
 
-echo 🚀 Starting Koor deployment...
+echo 🚀 Starting Kooreh deployment...
 
 REM Check if we're in the right directory
 if not exist "package.json" (
@@ -65,5 +65,5 @@ if "%1"=="--start" (
 )
 
 echo.
-echo 🎉 Koor is ready for production!
+echo 🎉 Kooreh is ready for production!
 pause

@@ -108,7 +108,7 @@ app.get('/api/businesses', async (req, res) => {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Koor API is running', timestamp: new Date().toISOString() });
+          res.json({ status: 'OK', message: 'Kooreh API is running', timestamp: new Date().toISOString() });
 });
 
 // Google Reviews API Endpoints
@@ -382,7 +382,7 @@ app.get('/', (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`[SERVER] Koor backend server listening at http://localhost:${PORT}`);
+      console.log(`[SERVER] Kooreh backend server listening at http://localhost:${PORT}`);
   console.log('[INFO] Frontend will be available at http://localhost:3001');
   console.log('[AUTH] Please ensure your Firebase service account has "Cloud Datastore User" or "Editor" roles.');
   console.log(`[HEALTH] Health check: http://localhost:${PORT}/api/health`);

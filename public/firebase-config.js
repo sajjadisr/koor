@@ -1,4 +1,4 @@
-// Firebase configuration for Koor app
+// Firebase configuration for Kooreh app
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";

@@ -1,4 +1,4 @@
-// Firebase utilities for Koor app
+// Firebase utilities for Kooreh app
 import { auth, db, storage } from './firebase-config.js';
 import { 
   collection, 

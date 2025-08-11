@@ -1,11 +1,11 @@
-# Koor - Merged Project Structure
+# Kooreh - Merged Project Structure
 
-This project has been merged from two separate folders (`/kore` and `/koor`) into one complete, unified project.
+This project has been merged from two separate folders (`/kore` and `/kooreh`) into one complete, unified project.
 
 ## Project Structure
 
 ```
-koor/
+kooreh/
 ├── public/                 # Frontend static files (main application)
 │   ├── index.html         # Main HTML file
 │   ├── main.js            # Main JavaScript application
@@ -36,7 +36,7 @@ koor/
 
 ## What Was Merged
 
-### From `/koor` (Main Project):
+### From `/kooreh` (Main Project):
 - ✅ Complete frontend application
 - ✅ Express.js backend server
 - ✅ All business logic and features

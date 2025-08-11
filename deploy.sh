@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Koor Deployment Script
-# This script builds and deploys the Koor application
+# Kooreh Deployment Script
+# This script builds and deploys the Kooreh application
 
 set -e  # Exit on any error
 
-echo "🚀 Starting Koor deployment..."
+echo "🚀 Starting Kooreh deployment..."
 
 # Check if we're in the right directory
 if [ ! -f "package.json" ]; then
@@ -70,4 +70,4 @@ else
 fi
 
 echo ""
-echo "🎉 Koor is ready for production!"
+echo "🎉 Kooreh is ready for production!"

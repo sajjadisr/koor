@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Then initialize the main app
     initializeApp();
     
-    console.log('Koor application initialized successfully');
+    console.log('Kooreh application initialized successfully');
   } catch (error) {
     console.error('Failed to initialize application:', error);
   }

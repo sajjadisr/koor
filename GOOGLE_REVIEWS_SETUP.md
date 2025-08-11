@@ -1,6 +1,6 @@
 # Google Reviews Integration Setup Guide
 
-This guide will help you set up Google Reviews integration for your Koor platform.
+This guide will help you set up Google Reviews integration for your Kooreh platform.
 
 ## Prerequisites
 

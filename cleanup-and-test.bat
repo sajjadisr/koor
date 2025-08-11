@@ -1,12 +1,12 @@
 @echo off
 echo ========================================
-echo Koor Project Merge - Cleanup and Test
+echo Kooreh Project Merge - Cleanup and Test
 echo ========================================
 echo.
 
 echo [1/4] Testing the merged project...
 echo Starting development server...
-start "Koor Dev Server" cmd /k "npm run dev"
+start "Kooreh Dev Server" cmd /k "npm run dev"
 
 echo.
 echo [2/4] Waiting for server to start...
@@ -22,7 +22,7 @@ echo.
 echo Once you're satisfied the merged project works:
 echo 1. Stop the development server (Ctrl+C)
 echo 2. Delete the old /kore folder from your workspace
-echo 3. The merged project is now complete in /koor
+echo 3. The merged project is now complete in /kooreh
 echo.
 echo ========================================
 echo Merge completed successfully!

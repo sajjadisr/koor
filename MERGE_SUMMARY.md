@@ -2,7 +2,7 @@
 
 ## What Was Accomplished
 
-✅ **Successfully merged `/kore` and `/koor` folders into one complete project**
+✅ **Successfully merged `/kore` and `/kooreh` folders into one complete project**
 
 ## Merge Details
 
@@ -14,7 +14,7 @@
 - `storage.rules` → `firebase-config/storage.rules`
 - `functions/` → `functions/` (entire directory)
 
-### Enhanced `/koor` Project:
+### Enhanced `/kooreh` Project:
 - Added Firebase CLI as dev dependency
 - Added Firebase deployment scripts
 - Created organized `firebase-config/` directory
@@ -24,7 +24,7 @@
 ## Current Project Structure
 
 ```
-koor/                          # MAIN PROJECT (KEEP THIS)
+kooreh/                          # MAIN PROJECT (KEEP THIS)
 ├── public/                    # Frontend application
 ├── firebase-config/           # Firebase configuration (from /kore)
 ├── functions/                 # Cloud Functions (from /kore)
@@ -38,7 +38,7 @@ koor/                          # MAIN PROJECT (KEEP THIS)
 ## What You Can Now Do
 
 1. **Delete the old `/kore` folder** - it's no longer needed
-2. **Use the merged `/koor` project** for all development
+2. **Use the merged `/kooreh` project** for all development
 3. **Deploy to Firebase** using the new configuration
 4. **Run Cloud Functions** locally or deploy them
 
@@ -46,7 +46,7 @@ koor/                          # MAIN PROJECT (KEEP THIS)
 
 1. **Test the merged project**:
    ```bash
-   cd koor
+   cd kooreh
    npm run dev
    ```
 

@@ -2,7 +2,7 @@
 
 ## What We've Built
 
-We've successfully implemented a comprehensive Google Reviews integration system for your Koor platform! Here's what's now available:
+We've successfully implemented a comprehensive Google Reviews integration system for your Kooreh platform! Here's what's now available:
 
 ## Backend API Endpoints
 
@@ -108,7 +108,7 @@ We've successfully implemented a comprehensive Google Reviews integration system
 
 ## Integration Points
 
-### 1. **Existing Koor Platform**
+### 1. **Existing Kooreh Platform**
 
 - Compatible with current Firebase setup
 - Integrates with existing UI components

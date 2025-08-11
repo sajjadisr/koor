@@ -1,4 +1,4 @@
-// AI utilities for Koor app using Firebase AI (Gemini)
+// AI utilities for Kooreh app using Firebase AI (Gemini)
 import { geminiModel } from './firebase-config.js';
 
 // --- AI-Powered Search and Recommendations ---

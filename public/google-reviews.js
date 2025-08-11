@@ -1,5 +1,5 @@
 /**
- * Google Reviews Integration for Koor Platform
+ * Google Reviews Integration for Kooreh Platform
  * This file handles all Google Reviews API calls and data processing
  */
 

@@ -1,4 +1,4 @@
-# Koor - Best Place Finder Platform for Iran
+# Kooreh - Best Place Finder Platform for Iran
 
 A modern, professional platform for discovering and exploring the best places in Iran. Built with cutting-edge technologies and best practices.
 
@@ -15,7 +15,7 @@ A modern, professional platform for discovering and exploring the best places in
 ## 🏗️ Architecture
 
 ```
-koor/
+kooreh/
 ├── src/                    # Frontend source code
 │   ├── js/                # JavaScript modules
 │   │   ├── app.js         # Main application logic
@@ -64,7 +64,7 @@ koor/
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd koor
+   cd kooreh
    ```
 
 2. **Install dependencies**

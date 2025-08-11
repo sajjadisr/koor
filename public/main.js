@@ -662,8 +662,8 @@ const firebaseConfig = {
             }
             
             // Update maps if available
-            if (typeof koorMaps !== 'undefined' && koorMaps && koorMaps.map) {
-                koorMaps.changeCity(cityName);
+                    if (typeof koorehMaps !== 'undefined' && koorehMaps && koorehMaps.map) {
+            koorehMaps.changeCity(cityName);
             }
             
             // Update maps city name display if maps section is visible
@@ -886,8 +886,8 @@ const firebaseConfig = {
             mapsSection.style.display = 'block';
             
             // Initialize map if not already done
-            if (typeof koorMaps !== 'undefined' && koorMaps && !koorMaps.map) {
-                koorMaps.initMap('cityMap', currentLocation);
+                    if (typeof koorehMaps !== 'undefined' && koorehMaps && !koorehMaps.map) {
+            koorehMaps.initMap('cityMap', currentLocation);
             }
             
             // Update maps city name display
@@ -1369,14 +1369,14 @@ const firebaseConfig = {
                 selectedCityName.textContent = currentLocation;
             }
             
-            if (cityCoordinates && typeof koorMaps !== 'undefined' && koorMaps) {
-                const coords = koorMaps.getCityCoordinates(currentLocation);
+                    if (cityCoordinates && typeof koorehMaps !== 'undefined' && koorehMaps) {
+            const coords = koorehMaps.getCityCoordinates(currentLocation);
                 if (coords) {
                     cityCoordinates.textContent = coords.join(', ');
                 }
             }
             
-            if (markersCount && typeof koorMaps !== 'undefined' && koorMaps) {
-                markersCount.textContent = koorMaps.markers.length;
+                    if (markersCount && typeof koorehMaps !== 'undefined' && koorehMaps) {
+            markersCount.textContent = koorehMaps.markers.length;
             }
         }

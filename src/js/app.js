@@ -4,7 +4,7 @@ import { displayResults, showLoading, hideLoading } from './ui.js';
 import { initializeMaps } from './maps.js';
 
 export function initializeApp() {
-  console.log('Initializing Koor application...');
+  console.log('Initializing Kooreh application...');
   
   // Initialize event listeners
   initializeEventListeners();
@@ -12,7 +12,7 @@ export function initializeApp() {
   // Initialize maps if available
   initializeMaps();
   
-  console.log('Koor application initialized successfully');
+  console.log('Kooreh application initialized successfully');
 }
 
 function initializeEventListeners() {
