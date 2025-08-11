@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نقشه شهر - هکور</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Custom styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .city-selector {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .city-selector h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .city-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .city-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s ease;
+        }
+
+        .city-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .city-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .map-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .map-container h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        #demoMap {
+            height: 500px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .map-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s ease;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .info-panel {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .info-panel h4 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .info-panel p {
+            color: #424242;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .city-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .city-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            #demoMap {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>نقشه شهرهای ایران</h1>
+            <p>نقشه دقیق شهرهای ایران با پلتفرم Neshan</p>
+        </div>
+
+        <div class="content">
+            <div class="city-selector">
+                <h3>انتخاب شهر</h3>
+                <div class="city-buttons">
+                    <button class="city-btn active" onclick="changeCity('تهران')">تهران</button>
+                    <button class="city-btn" onclick="changeCity('اصفهان')">اصفهان</button>
+                    <button class="city-btn" onclick="changeCity('مشهد')">مشهد</button>
+                    <button class="city-btn" onclick="changeCity('شیراز')">شیراز</button>
+                    <button class="city-btn" onclick="changeCity('تبریز')">تبریز</button>
+                    <button class="city-btn" onclick="changeCity('قم')">قم</button>
+                    <button class="city-btn" onclick="changeCity('کرج')">کرج</button>
+                    <button class="city-btn" onclick="changeCity('اهواز')">اهواز</button>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <h3>نقشه شهر <span id="currentCityName">تهران</span></h3>
+                <div id="demoMap"></div>
+                
+                <div class="map-controls">
+                    <button class="control-btn" onclick="getCurrentLocation()">📍 موقعیت فعلی</button>
+                    <button class="control-btn" onclick="searchNearbyPlaces()">🔍 مکان‌های نزدیک</button>
+                    <button class="control-btn" onclick="showCityBoundaries()">🏙 محدوده شهر</button>
+                    <button class="control-btn" onclick="clearMarkers()">🗑 پاک کردن نشانه‌ها</button>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h4>درباره این نقشه</h4>
+                <p>این نقشه با استفاده از پلتفرم Neshan Maps ایجاد شده و مختصات دقیق شهرهای ایران را نمایش می‌دهد. شما می‌توانید شهرهای مختلف را انتخاب کنید، موقعیت فعلی خود را ببینید و مکان‌های نزدیک را جستجو کنید.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Neshan Maps Integration -->
+    <script src="neshan-maps-integrated.js"></script>
+    
+    <!-- Demo Script -->
+    <script>
+        let demoMaps;
+        let currentCity = 'تهران';
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Koor Neshan Maps
+            demoMaps = new KoorNeshanMaps('YOUR_NESHAN_API_KEY');
+            
+            // Initialize map with Tehran
+            demoMaps.initMap('demoMap', 'تهران');
+        });
+
+        // Change city function
+        function changeCity(cityName) {
+            currentCity = cityName;
+            
+            // Update active button
+            document.querySelectorAll('.city-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update city name display
+            document.getElementById('currentCityName').textContent = cityName;
+            
+            // Change city on map
+            if (demoMaps) {
+                demoMaps.changeCity(cityName);
+            }
+        }
+
+        // Get current location
+        function getCurrentLocation() {
+            if (demoMaps) {
+                demoMaps.getCurrentLocation();
+            }
+        }
+
+        // Search nearby places
+        function searchNearbyPlaces() {
+            if (demoMaps) {
+                demoMaps.searchNearbyPlaces();
+            }
+        }
+
+        // Show city boundaries
+        function showCityBoundaries() {
+            if (demoMaps) {
+                demoMaps.showCityBoundaries();
+            }
+        }
+
+        // Clear markers
+        function clearMarkers() {
+            if (demoMaps) {
+                demoMaps.clearMarkers();
+            }
+        }
+    </script>
+</body>
+</html>

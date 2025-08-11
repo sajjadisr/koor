@@ -35,6 +35,7 @@
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#3182ce">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="هکور">
     
@@ -49,15 +50,15 @@
         <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     </noscript>
 
-  <link rel="stylesheet" href="./public/main.css" type="text/css">
-  <link rel="stylesheet" href="./public/query/desktop.css" type="text/css">
+  <link rel="stylesheet" href="./main.css" type="text/css">
+  <link rel="stylesheet" href="./query/desktop.css" type="text/css">
 
 </head>
 <body>
     <div class="container">
         <header class="header">
             <div class="header-top">
-                <div class="logo"><img src="./public/image/ChatGPT Image Aug 9, 2025, 09_50_10 PM.png" alt=""></div>
+                <a href="./index.html"><div class="logo"><img src="./image/ChatGPT Image Aug 11, 2025, 04_58_02 PM.png" alt=""></div></a>
                 <button class="location-btn" onclick="openCitySelector()" aria-label="تغییر مکان">
                     <span>📍</span>
                     <span id="currentLocation">تهران</span>
@@ -84,12 +85,12 @@
                 </div>
                 <div class="category-card" data-category="salon" onclick="selectCategory('salon')"
                      tabindex="0" role="button" aria-label="انتخاب آرایشگاه">
-                    <span class="category-icon">💇‍♀️</span>
+                    <span class="category-icon">💇</span>
                     <span class="category-name">آرایشگاه</span>
                 </div>
                 <div class="category-card" data-category="barber" onclick="selectCategory('barber')"
                      tabindex="0" role="button" aria-label="انتخاب آرایشگاه مردانه">
-                    <span class="category-icon">✂️</span>
+                    <span class="category-icon">✂</span>
                     <span class="category-name">آرایشگاه مردانه</span>
                 </div>
                 <div class="category-card" data-category="school" onclick="selectCategory('school')"
@@ -104,7 +105,7 @@
                 </div>
                 <div class="category-card" data-category="restaurant" onclick="selectCategory('restaurant')"
                      tabindex="0" role="button" aria-label="انتخاب رستوران">
-                    <span class="category-icon">🍽️</span>
+                    <span class="category-icon">🍽</span>
                     <span class="category-name">رستوران</span>
                 </div>
             </div>
@@ -117,7 +118,7 @@
                     <div class="results-count" id="resultsCount">۱۲ نتیجه یافت شد</div>
                 </div>
                 <button class="filter-btn" onclick="openFilters()" aria-label="باز کردن فیلترها">
-                    <span>⚙️</span>
+                    <span>⚙</span>
                     <span>فیلتر</span>
                 </button>
             </div>
@@ -186,21 +187,26 @@
             </div>
             
             <div class="profile-actions">
-                <button class="profile-action-btn" onclick="openLoginModal()">
+                <button class="profile-action-btn" id="loginRegisterBtn">
                     <span>ورود / ثبت نام</span>
                     <span class="icon">👤</span>
                 </button>
                 <button class="profile-action-btn" onclick="showFavorites()">
                     <span>مکان‌های مورد علاقه</span>
-                    <span class="icon">❤️</span>
+                    <span class="icon">❤</span>
                 </button>
                 <button class="profile-action-btn" onclick="showSettings()">
                     <span>تنظیمات</span>
-                    <span class="icon">⚙️</span>
+                    <span class="icon">⚙</span>
                 </button>
-                <button class="profile-action-btn" onclick="logout()" id="logoutBtn" style="display: none;">
+                <button class="profile-action-btn hidden" id="logoutBtn">
                     <span>خروج از حساب</span>
                     <span class="icon">🚪</span>
+                </button>
+                <!-- NEW: Business Owner Button -->
+                <button id="addBusinessBtn" class="profile-action-btn btn-primary" style="margin-top: 10px;">
+                    <span>ثبت کسب و کار شما</span>
+                    <span class="icon">🏢</span>
                 </button>
             </div>
         </section>
@@ -216,9 +222,14 @@
                 <span class="nav-icon">🔍</span>
                 <span class="nav-label">جستجو</span>
             </div>
+            <div class="nav-item" onclick="selectNavItem(this, 'maps')"
+                 tabindex="0" role="button" aria-label="نقشه">
+                <span class="nav-icon">🗺</span>
+                <span class="nav-label">نقشه</span>
+            </div>
             <div class="nav-item" onclick="selectNavItem(this, 'favorites')"
                  tabindex="0" role="button" aria-label="علاقه‌مندی‌ها">
-                <span class="nav-icon">❤️</span>
+                <span class="nav-icon">❤</span>
                 <span class="nav-label">علاقه‌مندی‌ها</span>
             </div>
             <div class="nav-item" onclick="selectNavItem(this, 'profile')"
@@ -227,6 +238,67 @@
                 <span class="nav-label">پروفایل</span>
             </div>
         </nav>
+        
+        <!-- NEW: Maps Section -->
+        <section class="maps-section" id="mapsSection" style="display: none;">
+            <div class="maps-header">
+                <h2 class="maps-title">🗺 نقشه شهر</h2>
+                <p class="maps-subtitle">مشاهده نقشه <span id="mapsCityName">تهران</span> و مکان‌های اطراف</p>
+            </div>
+            
+            <div class="maps-controls">
+                <div class="map-control-group">
+                    <button class="map-control-btn" onclick="koorMaps?.getCurrentLocation()">
+                        📍 موقعیت فعلی
+                    </button>
+                    <button class="map-control-btn" onclick="koorMaps?.searchNearbyPlaces()">
+                        🔍 مکان‌های نزدیک
+                    </button>
+                    <button class="map-control-btn" onclick="koorMaps?.showCityBoundaries()">
+                        🏙 محدوده شهر
+                    </button>
+                    <button class="map-control-btn" onclick="koorMaps?.clearMarkers()">
+                        🗑 پاک کردن نشانه‌ها
+                    </button>
+                </div>
+            </div>
+            
+            <div class="map-container">
+                <div id="cityMap"></div>
+            </div>
+            
+            <div class="maps-info">
+                <div class="city-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon">📍</span>
+                        <span class="stat-label">شهر انتخاب شده:</span>
+                        <span class="stat-value" id="selectedCityName">تهران</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">🌍</span>
+                        <span class="stat-label">مختصات:</span>
+                        <span class="stat-value" id="cityCoordinates">35.689, 51.389</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">🎯</span>
+                        <span class="stat-label">نشانه‌ها:</span>
+                        <span class="stat-value" id="markersCount">1</span>
+                    </div>
+                </div>
+                
+                <div class="map-features">
+                    <h4>✨ ویژگی‌های نقشه:</h4>
+                    <ul>
+                        <li>🗺 نقشه دقیق شهرهای ایران با Neshan</li>
+                        <li>📍 نمایش موقعیت فعلی شما</li>
+                        <li>🔍 جستجوی مکان‌های نزدیک</li>
+                        <li>🏙 نمایش محدوده شهر</li>
+                        <li>🎯 افزودن نشانه‌های سفارشی</li>
+                        <li>📱 سازگار با موبایل و دسکتاپ</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
         
         <div class="modal" id="filtersModal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
             <div class="modal-content">
@@ -264,9 +336,9 @@
                 <div class="filter-group">
                     <h4 class="filter-group-title">امتیاز</h4>
                     <div class="filter-options">
-                        <div class="filter-option" data-filter="rating-5">⭐⭐⭐⭐⭐ (۵ ستاره)</div>
-                        <div class="filter-option" data-filter="rating-4">⭐⭐⭐⭐ (۴ ستاره و بالاتر)</div>
-                        <div class="filter-option" data-filter="rating-3">⭐⭐⭐ (۳ ستاره و بالاتر)</div>
+                        <div class="filter-option" data-filter="rating-5">★★★★★ (۵ ستاره)</div>
+                        <div class="filter-option" data-filter="rating-4">★★★★ (۴ ستاره و بالاتر)</div>
+                        <div class="filter-option" data-filter="rating-3">★★★ (۳ ستاره و بالاتر)</div>
                     </div>
                 </div>
                 <button class="action-btn primary" style="width: 100%; margin-top: 24px;" onclick="applyFilters()">
@@ -283,12 +355,12 @@
                 </div>
                 <form id="loginForm">
                     <div class="form-group">
-                        <label class="form-label" for="email">ایمیل</label>
-                        <input type="email" id="email" class="form-input" placeholder="example@email.com" required>
+                        <label class="form-label" for="loginEmail">ایمیل</label>
+                        <input type="email" id="loginEmail" class="form-input" placeholder="example@email.com" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="password">رمز عبور</label>
-                        <input type="password" id="password" class="form-input" placeholder="رمز عبور خود را وارد کنید" required>
+                        <label class="form-label" for="loginPassword">رمز عبور</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="رمز عبور خود را وارد کنید" required>
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">ورود</button>
@@ -350,8 +422,57 @@
         <div class="toast" id="toast">
             <span id="toastMessage"></span>
         </div>
+
+        <!-- Business Submission Section (initially hidden) -->
+        <div id="addBusinessSection" class="modal business-modal hidden" role="dialog" aria-labelledby="add-business-title" aria-hidden="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="add-business-title">ثبت کسب و کار شما در کوره</h3>
+                    <button class="close-btn" onclick="closeModal(addBusinessSection)" aria-label="بستن">×</button>
+                </div>
+                <form id="businessForm">
+                    <div class="form-group">
+                        <label for="businessName" class="form-label">نام کسب و کار:</label>
+                        <input type="text" id="businessName" class="form-input" placeholder="نام کسب و کار خود را وارد کنید" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="businessCategory" class="form-label">دسته بندی:</label>
+                        <input type="text" id="businessCategory" class="form-input" placeholder="مثال: باشگاه بدنسازی، رستوران" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="businessDescription" class="form-label">توضیحات:</label>
+                        <textarea id="businessDescription" class="form-input" placeholder="توضیحات کامل کسب و کار" rows="4" required></textarea>
+                    </div>
+                            <div class="form-actions">
+            <button type="submit" class="btn btn-primary">ثبت کسب و کار</button>
+        </div>
+    </form>
+</div>
+
+<!-- AI Demo Link -->
+<div class="ai-demo-link" style="text-align: center; margin-top: 20px;">
+    <a href="./ai-demo.html" class="btn btn-secondary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; display: inline-block;">
+        🤖 نمایش قابلیت‌های هوش مصنوعی
+    </a>
+</div>
+        </div>
+
     </div>
     
-  <script src="./public/main.js"></script>
+      <!-- Leaflet CSS and JS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Firebase SDKs - MUST be loaded BEFORE your main.js script -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- <script src="./firebase-config.js"></script> -->
+    <!-- <script src="./ai-utils.js"></script> -->
+    
+    <!-- Neshan Maps Integration -->
+    <script src="./neshan-maps-integrated.js"></script>
+    
+    <script src="./main.js"></script>
 </body>
 </html>

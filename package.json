@@ -1,14 +1,41 @@
 {
   "name": "koor",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Koor - Best place finder platform for Iran",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "vite",
+    "dev:backend": "node server.js",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server.js",
+    "test": "node firestore_test.js",
+    "firebase:deploy": "firebase deploy",
+    "firebase:deploy:hosting": "firebase deploy --only hosting",
+    "firebase:deploy:functions": "firebase deploy --only functions",
+    "firebase:deploy:firestore": "firebase deploy --only firestore",
+    "firebase:emulators": "firebase emulators:start"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.2.1",
+    "@googlemaps/google-maps-services-js": "^3.3.42",
+    "axios": "^1.11.0",
+    "body-parser": "^2.2.0",
+    "cheerio": "^1.0.0-rc.12",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "firebase": "^12.1.0",
+    "firebase-admin": "^13.4.0",
+    "puppeteer": "^21.5.0"
   },
   "devDependencies": {
-    "vite": "^7.1.0"
+    "concurrently": "^8.2.2",
+    "vite": "^7.1.0",
+    "firebase-tools": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

@@ -1,18 +1,32 @@
+        // Firebase Configuration (REPLACE WITH YOUR OWN CONFIG FROM FIREBASE CONSOLE)
+const firebaseConfig = {
+  apiKey: "AIzaSyBUhFYpviZSDd-XjplnEuJgQEKOVQ9O0dE",
+  authDomain: "koreh-d4a98.firebaseapp.com",
+  projectId: "koreh-d4a98",
+  storageBucket: "koreh-d4a98.firebasestorage.app",
+  messagingSenderId: "690624738272",
+  appId: "1:690624738272:web:75847121f6900bbaeaf185",
+  measurementId: "G-R5CSK0QBK5"
+};
 
-        // Global variables
+        // Initialize Firebase app and services IMMEDIATELY at script load
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = app.auth();     // Firebase Authentication service
+        const db = app.firestore();  // Firebase Firestore service (for reviews/favorites later if needed client-side)
+
+
+        // Global variables and mock data (defined AFTER Firebase init)
         let selectedCategory = null;
         let activeFilters = [];
         let currentLocation = 'تهران';
         let searchTimeout;
         let isLoading = false;
-        let currentUser = null;
-        let favorites = [];
-        let reviews = [];
+        let favorites = []; // These can be connected to Firestore later per user
+        let reviews = []; // These can be connected to Firestore later per business/user
         let visits = [];
         let recentSearches = [];
         let observer;
-        
-        // Mock data for different categories
+
         const mockData = {
             gym: [
                 {
@@ -66,7 +80,7 @@
                     distance: '۰.۸ کیلومتر',
                     highlights: ['میکاپ عروس', 'رنگ موی طبیعی', 'ماساژ صورت'],
                     badge: 'تأیید شده',
-                    icon: '💇‍♀️',
+                    icon: '💇',
                     phone: '021-55667788'
                 },
                 {
@@ -79,7 +93,7 @@
                     distance: '۱.۶ کیلومتر',
                     highlights: ['اصلاح ابرو', 'کوتاهی مو', 'فر مو'],
                     badge: 'محبوب',
-                    icon: '💇‍♀️',
+                    icon: '💇',
                     phone: '021-99887766'
                 }
             ],
@@ -94,7 +108,7 @@
                     distance: '۱.۵ کیلومتر',
                     highlights: ['اصلاح ریش', 'کوتاهی مدرن', 'ماساژ سر'],
                     badge: 'تأیید شده',
-                    icon: '✂️',
+                    icon: '✂',
                     phone: '021-44556677'
                 }
             ],
@@ -109,7 +123,7 @@
                     distance: '۲.۳ کیلومتر',
                     highlights: ['کباب کوبیده', 'محیط سنتی', 'موسیقی زنده'],
                     badge: 'محبوب',
-                    icon: '🍽️',
+                    icon: '🍽',
                     phone: '021-33445566'
                 }
             ],
@@ -175,14 +189,81 @@
             'کلینیک دندان', 'باشگاه فیتنس', 'رستوران فست فود',
             'سالن ماساژ', 'آرایشگاه مردانه', 'کتابخانه عمومی'
         ];
+
+        // --- Core Rendering Functions ---
+        // Renders the main list of places on the home screen or results page
+        function renderPlaces(places) {
+            displayResults(places);
+        }
+
+        function displayResults(places) {
+            const container = document.getElementById('placesContainer');
+            if (places.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <div class="empty-state-title">نتیجه‌ای یافت نشد</div>
+                        <div class="empty-state-text">متأسفانه در این دسته‌بندی مکانی یافت نشد.<br>لطفاً دسته‌بندی دیگری را امتحان کنید.</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = places.map(place => `
+                <div class="place-card" data-id="${place.id}">
+                    <div class="place-image" data-icon="${place.icon}">
+                        <div class="place-badge">${place.badge}</div>
+                    </div>
+                    <div class="place-info">
+                        <div class="place-header">
+                            <h4 class="place-name">${place.name}</h4>
+                            <span class="place-price">${place.price}</span>
+                        </div>
+                        <p class="place-category">${place.category}</p>
+                        <div class="place-rating">
+                            <span class="stars">${generateStars(place.rating)}</span>
+                            <span class="rating-text">${place.rating} (${place.reviews} نظر)</span>
+                        </div>
+                        <p class="place-distance">📍 ${place.distance} از شما</p>
+                        <div class="place-highlights">
+                            ${place.highlights.map(highlight => `<span class="highlight-tag">${highlight}</span>`).join('')}
+                        </div>
+                        <div class="place-actions">
+                            <button class="action-btn" onclick="showReviewsForPlace('${place.name}', ${place.id})">💬 نظرات</button>
+                            <button class="action-btn" onclick="showCallConfirmation('${place.phone}')">📞 تماس</button>
+                            <button class="action-btn primary" onclick="showDirectionsConfirmation('${place.name}')">📍 مسیریابی</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Observe new place cards for lazy loading
+            const placeCards = document.querySelectorAll('.place-card');
+            placeCards.forEach(card => {
+                observer.observe(card);
+            });
+        }
         
-        // Initialize the app
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            let stars = '';
+            for (let i = 0; i < fullStars; i++) {
+                stars += '★';
+            }
+            if (hasHalfStar) {
+                stars += '★';
+            }
+            return stars;
+        }
+
+        // Initialize the app when DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize Intersection Observer for lazy loading
             initLazyLoading();
             
-            // Load user data from localStorage if available
-            loadUserData();
+            // Load local data (favorites, reviews, visits)
+            loadUserDataFromLocalStorage();
             
             // Load recent searches from localStorage
             const savedSearches = localStorage.getItem('recentSearches');
@@ -238,7 +319,7 @@
             // Close modals on Escape key
             window.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {
-                    const openModals = document.querySelectorAll('.modal[style*="display: block"]');
+                    const openModals = document.querySelectorAll('.modal[style*="display: flex"]');
                     openModals.forEach(modal => closeModal(modal));
                 }
             });
@@ -246,8 +327,32 @@
             // Initialize city list
             renderCityList(cities);
             
-            // Update profile UI
-            updateProfileUI();
+            // Initial rendering of places (using mock data for now)
+            const allPlaces = Object.values(mockData).flat();
+            renderPlaces(allPlaces);
+
+            // Firebase Auth State Listener: This is crucial!
+            // It runs once Firebase Auth is initialized AND whenever a user logs in/out.
+            auth.onAuthStateChanged(user => {
+                updateProfileUI(user); // Safely update UI once auth is ready
+            });
+
+            // Attach event listeners to buttons using JavaScript for reliability
+            // This ensures the elements exist and auth is initialized before attaching listeners
+            const loginRegisterBtn = document.getElementById('loginRegisterBtn');
+            if (loginRegisterBtn) {
+                loginRegisterBtn.addEventListener('click', openLoginModal);
+            }
+            
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', logout);
+            }
+
+            const addBusinessBtn = document.getElementById('addBusinessBtn');
+            if (addBusinessBtn) {
+                addBusinessBtn.addEventListener('click', openAddBusinessModal);
+            }
         });
         
         // Initialize Intersection Observer for lazy loading
@@ -407,7 +512,7 @@
                     <h3 class="recent-title">جستجوهای اخیر</h3>
                     ${recentSearches.map(term => `
                         <div class="recent-item" onclick="selectSuggestion('${term}')">
-                            <span class="search-icon">🔍</span>
+                            <span>🔍</span>
                             <span>${term}</span>
                         </div>
                     `).join('')}
@@ -422,7 +527,7 @@
                 card.classList.remove('active');
             });
             // Add active class to selected category
-            event.target.classList.add('active');
+            event.currentTarget.classList.add('active'); // Use currentTarget for event listener on parent
             selectedCategory = category;
             // Show results section
             showResults(category);
@@ -446,11 +551,13 @@
             const profileSection = document.getElementById('profileSection');
             const resultsTitle = document.getElementById('resultsTitle');
             const resultsCount = document.getElementById('resultsCount');
+            const addBusinessSection = document.getElementById('addBusinessSection');
             
             // Hide all sections and show results
             categoriesSection.style.display = 'none';
             searchPage.style.display = 'none';
             profileSection.style.display = 'none';
+            addBusinessSection.style.display = 'none';
             resultsSection.style.display = 'block';
             
             // Update title based on category
@@ -491,71 +598,10 @@
             `;
         }
         
-        function displayResults(places) {
-            const container = document.getElementById('placesContainer');
-            if (places.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🔍</div>
-                        <div class="empty-state-title">نتیجه‌ای یافت نشد</div>
-                        <div class="empty-state-text">متأسفانه در این دسته‌بندی مکانی یافت نشد.<br>لطفاً دسته‌بندی دیگری را امتحان کنید.</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = places.map(place => `
-                <div class="place-card" data-id="${place.id}">
-                    <div class="place-image" data-icon="${place.icon}">
-                        <div class="place-badge">${place.badge}</div>
-                    </div>
-                    <div class="place-info">
-                        <div class="place-header">
-                            <h4 class="place-name">${place.name}</h4>
-                            <span class="place-price">${place.price}</span>
-                        </div>
-                        <p class="place-category">${place.category}</p>
-                        <div class="place-rating">
-                            <span class="stars">${generateStars(place.rating)}</span>
-                            <span class="rating-text">${place.rating} (${place.reviews} نظر)</span>
-                        </div>
-                        <p class="place-distance">📍 ${place.distance} از شما</p>
-                        <div class="place-highlights">
-                            ${place.highlights.map(highlight => `<span class="highlight-tag">${highlight}</span>`).join('')}
-                        </div>
-                        <div class="place-actions">
-                            <button class="action-btn" onclick="showReviews('${place.name}', ${place.id})">💬 نظرات</button>
-                            <button class="action-btn" onclick="callPlace('${place.phone}')">📞 تماس</button>
-                            <button class="action-btn primary" onclick="getDirections('${place.name}')">📍 مسیریابی</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Observe new place cards for lazy loading
-            const placeCards = document.querySelectorAll('.place-card');
-            placeCards.forEach(card => {
-                observer.observe(card);
-            });
-        }
-        
-        function generateStars(rating) {
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 >= 0.5;
-            let stars = '';
-            for (let i = 0; i < fullStars; i++) {
-                stars += '⭐';
-            }
-            if (hasHalfStar) {
-                stars += '⭐';
-            }
-            return stars;
-        }
-        
         // City switching system
         function openCitySelector() {
             const modal = document.getElementById('citySelectorModal');
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
             modal.setAttribute('aria-hidden', 'false');
             document.getElementById('citySearchInput').focus();
         }
@@ -615,13 +661,27 @@
                 }, 1000);
             }
             
+            // Update maps if available
+            if (typeof koorMaps !== 'undefined' && koorMaps && koorMaps.map) {
+                koorMaps.changeCity(cityName);
+            }
+            
+            // Update maps city name display if maps section is visible
+            const mapsCityName = document.getElementById('mapsCityName');
+            if (mapsCityName) {
+                mapsCityName.textContent = cityName;
+            }
+            
+            // Update city stats
+            updateMapsCityStats();
+            
             showToast(`شهر به ${cityName} تغییر کرد`, 'success');
         }
         
         // Filter functionality
         function openFilters() {
             const modal = document.getElementById('filtersModal');
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
             modal.setAttribute('aria-hidden', 'false');
             // Focus management for accessibility
             setTimeout(() => {
@@ -734,6 +794,9 @@
                 case 'search':
                     showSearchPage();
                     break;
+                case 'maps':
+                    showMapsSection();
+                    break;
                 case 'favorites':
                     showFavorites();
                     break;
@@ -748,11 +811,15 @@
             const resultsSection = document.getElementById('resultsSection');
             const searchPage = document.getElementById('searchPage');
             const profileSection = document.getElementById('profileSection');
+            const addBusinessSection = document.getElementById('addBusinessSection');
+            const mapsSection = document.getElementById('mapsSection');
             
             categoriesSection.style.display = 'block';
             resultsSection.style.display = 'none';
             searchPage.style.display = 'none';
             profileSection.style.display = 'none';
+            addBusinessSection.style.display = 'none';
+            mapsSection.style.display = 'none';
             
             // Reset category selection
             selectedCategory = null;
@@ -768,10 +835,14 @@
             const resultsSection = document.getElementById('resultsSection');
             const searchPage = document.getElementById('searchPage');
             const profileSection = document.getElementById('profileSection');
+            const addBusinessSection = document.getElementById('addBusinessSection');
+            const mapsSection = document.getElementById('mapsSection');
             
             categoriesSection.style.display = 'none';
             resultsSection.style.display = 'none';
             profileSection.style.display = 'none';
+            addBusinessSection.style.display = 'none';
+            mapsSection.style.display = 'none';
             searchPage.style.display = 'block';
             
             // Clear search
@@ -784,37 +855,81 @@
             const resultsSection = document.getElementById('resultsSection');
             const searchPage = document.getElementById('searchPage');
             const profileSection = document.getElementById('profileSection');
+            const addBusinessSection = document.getElementById('addBusinessSection');
+            const mapsSection = document.getElementById('mapsSection');
             
             categoriesSection.style.display = 'none';
             resultsSection.style.display = 'none';
             searchPage.style.display = 'none';
+            addBusinessSection.style.display = 'none';
+            mapsSection.style.display = 'none';
             profileSection.style.display = 'block';
             
-            updateProfileUI();
+            // auth.currentUser is guaranteed to be available here due to onAuthStateChanged
+            updateProfileUI(auth.currentUser);
         }
-        
-        // User system
+
+        // Show Maps Section
+        function showMapsSection() {
+            const categoriesSection = document.getElementById('categoriesSection');
+            const resultsSection = document.getElementById('resultsSection');
+            const searchPage = document.getElementById('searchPage');
+            const profileSection = document.getElementById('profileSection');
+            const addBusinessSection = document.getElementById('addBusinessSection');
+            const mapsSection = document.getElementById('mapsSection');
+            
+            categoriesSection.style.display = 'none';
+            resultsSection.style.display = 'none';
+            searchPage.style.display = 'none';
+            profileSection.style.display = 'none';
+            addBusinessSection.style.display = 'none';
+            mapsSection.style.display = 'block';
+            
+            // Initialize map if not already done
+            if (typeof koorMaps !== 'undefined' && koorMaps && !koorMaps.map) {
+                koorMaps.initMap('cityMap', currentLocation);
+            }
+            
+            // Update maps city name display
+            const mapsCityName = document.getElementById('mapsCityName');
+            if (mapsCityName) {
+                mapsCityName.textContent = currentLocation;
+            }
+            
+            // Update city stats
+            updateMapsCityStats();
+        }
+
+        // --- User Authentication and Profile Management (Firebase Auth) ---
         function openLoginModal() {
-            if (currentUser) {
+            // If user is already logged in via Firebase Auth, show profile section
+            if (auth.currentUser) {
                 showProfileSection();
                 return;
             }
-            
-            document.getElementById('loginModal').style.display = 'block';
-            document.getElementById('email').focus();
+            const loginModal = document.getElementById('loginModal');
+            loginModal.style.display = 'flex';
+            loginModal.setAttribute('aria-hidden', 'false');
+            document.getElementById('loginEmail').focus();
         }
         
         function closeLoginModal() {
-            document.getElementById('loginModal').style.display = 'none';
+            const loginModal = document.getElementById('loginModal');
+            loginModal.style.display = 'none';
+            loginModal.setAttribute('aria-hidden', 'true');
         }
         
         function openRegisterModal() {
-            document.getElementById('registerModal').style.display = 'block';
+            const registerModal = document.getElementById('registerModal');
+            registerModal.style.display = 'flex';
+            registerModal.setAttribute('aria-hidden', 'false');
             document.getElementById('regName').focus();
         }
         
         function closeRegisterModal() {
-            document.getElementById('registerModal').style.display = 'none';
+            const registerModal = document.getElementById('registerModal');
+            registerModal.style.display = 'none';
+            registerModal.setAttribute('aria-hidden', 'true');
         }
         
         function switchToRegister() {
@@ -827,43 +942,41 @@
             openLoginModal();
         }
         
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
             
-            // Simple validation
             if (!email || !password) {
                 showToast('لطفاً تمام فیلدها را پر کنید', 'error');
                 return;
             }
             
-            // In a real app, this would be an API call
-            // For demo, we'll simulate a successful login
-            currentUser = {
-                id: 1,
-                name: 'کاربر کور',
-                email: email,
-                joined: new Date().toISOString()
-            };
-            
-            // Save to localStorage
-            saveUserData();
-            
-            // Update UI
-            updateProfileUI();
-            closeLoginModal();
-            showToast('با موفقیت وارد شدید', 'success');
+            showToast('در حال ورود...', 'info');
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                closeLoginModal();
+                showToast('با موفقیت وارد شدید', 'success');
+                // UI will be updated by onAuthStateChanged listener
+            } catch (error) {
+                console.error("Login error:", error.code, error.message);
+                let errorMessage = "خطا در ورود. لطفاً دوباره تلاش کنید.";
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMessage = 'ایمیل یا رمز عبور اشتباه است.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'فرمت ایمیل نامعتبر است.';
+                }
+                showToast(`❌ ${errorMessage}`, 'error');
+            }
         }
         
-        function handleRegister(e) {
+        async function handleRegister(e) {
             e.preventDefault();
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
             const confirmPassword = document.getElementById('regConfirmPassword').value;
             
-            // Simple validation
             if (!name || !email || !password || !confirmPassword) {
                 showToast('لطفاً تمام فیلدها را پر کنید', 'error');
                 return;
@@ -873,77 +986,79 @@
                 showToast('رمز عبور و تکرار آن یکسان نیستند', 'error');
                 return;
             }
-            
-            // In a real app, this would be an API call
-            // For demo, we'll simulate a successful registration
-            currentUser = {
-                id: Date.now(),
-                name: name,
-                email: email,
-                joined: new Date().toISOString()
-            };
-            
-            // Save to localStorage
-            saveUserData();
-            
-            // Update UI
-            updateProfileUI();
-            closeRegisterModal();
-            showToast('حساب کاربری شما با موفقیت ایجاد شد', 'success');
-        }
-        
-        function logout() {
-            currentUser = null;
-            favorites = [];
-            reviews = [];
-            visits = [];
-            
-            // Clear localStorage
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('favorites');
-            localStorage.removeItem('reviews');
-            localStorage.removeItem('visits');
-            
-            // Update UI
-            updateProfileUI();
-            showToast('با موفقیت از حساب خارج شدید', 'success');
-        }
-        
-        function updateProfileUI() {
-            if (currentUser) {
-                document.getElementById('profileName').textContent = currentUser.name;
-                document.getElementById('profileEmail').textContent = currentUser.email;
-                document.getElementById('logoutBtn').style.display = 'flex';
-            } else {
-                document.getElementById('profileName').textContent = 'کاربر مهمان';
-                document.getElementById('profileEmail').textContent = '-';
-                document.getElementById('logoutBtn').style.display = 'none';
+
+            if (password.length < 6) {
+                showToast('رمز عبور باید حداقل ۶ کاراکتر باشد.', 'error');
+                return;
             }
             
-            // Update stats
+            showToast('در حال ثبت نام...', 'info');
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.updateProfile({ displayName: name }); // Set display name
+                closeRegisterModal();
+                showToast('حساب کاربری شما با موفقیت ایجاد شد', 'success');
+                // UI will be updated by onAuthStateChanged listener
+            } catch (error) {
+                console.error("Register error:", error.code, error.message);
+                let errorMessage = "خطا در ثبت نام. لطفاً دوباره تلاش کنید.";
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'این ایمیل قبلاً ثبت نام شده است.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'رمز عبور بسیار ضعیف است. حداقل ۶ کاراکتر وارد کنید.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'فرمت ایمیل نامعتبر است.';
+                }
+                showToast(`❌ ${errorMessage}`, 'error');
+            }
+        }
+        
+        async function logout() {
+            try {
+                await auth.signOut();
+                showToast('با موفقیت از حساب خارج شدید', 'success');
+                // UI will be updated by onAuthStateChanged listener
+                // Clear local storage data not managed by Firebase
+                localStorage.removeItem('favorites');
+                localStorage.removeItem('reviews');
+                localStorage.removeItem('visits');
+                favorites = []; reviews = []; visits = []; // Clear local arrays
+            } catch (error) {
+                console.error("Logout error:", error);
+                showToast('خطا در خروج از حساب. لطفاً دوباره تلاش کنید.', 'error');
+            }
+        }
+        
+        function updateProfileUI(user) {
+            // 'user' here is the Firebase User object, or null if logged out
+            const profileNameElement = document.getElementById('profileName');
+            const profileEmailElement = document.getElementById('profileEmail');
+            const loginRegisterBtn = document.getElementById('loginRegisterBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (user) {
+                profileNameElement.textContent = user.displayName || 'کاربر کوره';
+                profileEmailElement.textContent = user.email;
+                loginRegisterBtn.classList.add('hidden'); // Hide login/register button
+                logoutBtn.classList.remove('hidden'); // Show logout button
+            } else {
+                profileNameElement.textContent = 'کاربر مهمان';
+                profileEmailElement.textContent = '-';
+                loginRegisterBtn.classList.remove('hidden'); // Show login/register button
+                logoutBtn.classList.add('hidden'); // Hide logout button
+            }
+            
+            // Update stats (these still use local mock arrays for now)
             document.getElementById('favoritesCount').textContent = favorites.length;
             document.getElementById('reviewsCount').textContent = reviews.length;
             document.getElementById('visitsCount').textContent = visits.length;
         }
         
-        function saveUserData() {
-            if (currentUser) {
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                localStorage.setItem('favorites', JSON.stringify(favorites));
-                localStorage.setItem('reviews', JSON.stringify(reviews));
-                localStorage.setItem('visits', JSON.stringify(visits));
-            }
-        }
-        
-        function loadUserData() {
-            const savedUser = localStorage.getItem('currentUser');
+        // This function now primarily handles local state, Firebase Auth manages user persistence itself
+        function loadUserDataFromLocalStorage() {
             const savedFavorites = localStorage.getItem('favorites');
             const savedReviews = localStorage.getItem('reviews');
             const savedVisits = localStorage.getItem('visits');
-            
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-            }
             
             if (savedFavorites) {
                 favorites = JSON.parse(savedFavorites);
@@ -958,92 +1073,310 @@
             }
         }
         
+        // This function now primarily saves local state, Firebase Auth manages user persistence itself
+        function saveUserDataToLocalStorage() {
+            // We don't need to save currentUser to localStorage anymore
+            // as Firebase Auth handles it automatically.
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+            localStorage.setItem('visits', JSON.stringify(visits));
+        }
+        
         function showFavorites() {
-            if (!currentUser) {
+            if (!auth.currentUser) { // Check Firebase Auth user
                 openLoginModal();
+                showToast('لطفاً برای مشاهده علاقه‌مندی‌ها وارد شوید.', 'info');
                 return;
             }
-            
-            // For demo, we'll show a message
-            showToast('مکان‌های مورد علاقه شما نمایش داده خواهند شد', 'success');
+            showToast('مکان‌های مورد علاقه شما نمایش داده خواهند شد (این قابلیت هنوز توسعه نیافته است).', 'info');
+            // In a real app, you would fetch and display user's favorited places from Firestore
+            // related to auth.currentUser.uid
         }
         
         function showSettings() {
-            if (!currentUser) {
+            if (!auth.currentUser) { // Check Firebase Auth user
                 openLoginModal();
+                showToast('لطفاً برای دسترسی به تنظیمات وارد شوید.', 'info');
                 return;
             }
-            
-            // For demo, we'll show a message
-            showToast('تنظیمات حساب کاربری', 'success');
+            showToast('صفحه تنظیمات حساب کاربری (این قابلیت هنوز توسعه نیافته است).', 'info');
+            // In a real app, you would navigate to a settings page or open a settings modal
         }
         
-        // Place actions
-        function showReviews(placeName, placeId) {
+        // Place actions (alert/confirm replaced with showToast or custom message)
+        function showReviewsForPlace(placeName, placeId) {
             const mockReviews = [
                 { author: 'علی احمدی', rating: 5, text: 'بهترین باشگاه منطقه! مربی‌ها فوق‌العاده حرفه‌ای هستند.', date: '۲ روز پیش' },
                 { author: 'مریم کریمی', rating: 4, text: 'امکانات عالی و تمیز. فقط پارکینگش کمی مشکل داره.', date: '۱ هفته پیش' },
                 { author: 'حسن رضایی', rating: 5, text: 'قیمت مناسب و کیفیت بالا. پیشنهاد می‌کنم.', date: '۲ هفته پیش' }
             ];
-            let reviewsText = `📝 نظرات درباره ${placeName}:\n`;
-            mockReviews.forEach(review => {
-                reviewsText += `${generateStars(review.rating)} ${review.author}\n"${review.text}"\n${review.date}\n`;
-            });
-            reviewsText += '💬 آیا شما هم نظری دارید?';
-            alert(reviewsText);
-            if (confirm('آیا می‌خواهید نظر خود را اضافه کنید؟')) {
-                submitReview(placeName, placeId);
+            // Ensure the placeDetailsContent element exists in index.html, if not, you'll need a modal for this.
+            // For now, let's assume it's part of a general modal structure.
+            let placeDetailsContentElement = document.getElementById('placeDetailsContent');
+            if (!placeDetailsContentElement) {
+                // If placeDetailsContent doesn't exist, create a temporary one for the demo or a dedicated modal
+                console.warn("Element with ID 'placeDetailsContent' not found. Cannot display reviews.");
+                showToast("خطا: المان نمایش نظرات یافت نشد. به توسعه‌دهنده اطلاع دهید.", "error");
+                return;
             }
-        }
-        
-        function submitReview(placeName, placeId) {
-            const rating = prompt(`چند ستاره به ${placeName} می‌دهید؟ (1-5)`);
-            if (rating && rating >= 1 && rating <= 5) {
-                const reviewText = prompt('نظر خود را بنویسید (حداقل ۱۰ کاراکتر):');
-                if (reviewText && reviewText.length >= 10) {
-                    alert(`✅ نظر شما با موفقیت ثبت شد!\nتشکر از اینکه به بهبود کیفیت اطلاعات کور کمک کردید.\nنظر شما پس از تأیید نمایش داده خواهد شد.`);
-                    // Simulate review submission
-                    setTimeout(() => {
-                        // In a real app, would update the specific place
-                        console.log('Review submitted:', { placeId, rating, reviewText });
-                    }, 1000);
-                } else {
-                    alert('❌ لطفاً متنی با حداقل ۱۰ کاراکتر وارد کنید.');
-                }
+
+
+            let reviewsHtml = `<h4>نظرات درباره ${placeName}:</h4>`;
+            if (mockReviews.length > 0) {
+                reviewsHtml += `<div class="review-list">`;
+                mockReviews.forEach(review => {
+                    reviewsHtml += `
+                        <div class="review-item">
+                            <div class="review-meta">
+                                <span>${review.author}</span>
+                                <span class="review-rating">${generateStars(review.rating)}</span>
+                            </div>
+                            <p>${review.text}</p>
+                            <small>${review.date}</small>
+                        </div>
+                    `;
+                });
+                reviewsHtml += `</div>`;
             } else {
-                alert('❌ لطفاً امتیازی بین ۱ تا ۵ وارد کنید.');
+                reviewsHtml += `<p>هنوز نظری برای این مکان ثبت نشده است.</p>`;
+            }
+            
+            // Add review submission form within the modal or link to it
+            reviewsHtml += `
+                <div class="review-form">
+                    <textarea id="reviewText" placeholder="نظر خود را بنویسید..." rows="4"></textarea>
+                    <input type="number" id="reviewRating" placeholder="امتیاز (1-5)" min="1" max="5">
+                    <button class="btn btn-primary" onclick="submitReview(${placeId})">ثبت نظر</button>
+                </div>
+            `;
+            
+            // Assuming 'placeModal' is the overall modal containing placeDetailsContent
+            const placeModal = document.getElementById('placeModal');
+            if (placeDetailsContentElement) {
+                placeDetailsContentElement.innerHTML = `
+                    <h2>${placeName}</h2>
+                    ${reviewsHtml}
+                `;
+            }
+
+            if (placeModal) {
+                placeModal.style.display = 'flex';
+                placeModal.setAttribute('aria-hidden', 'false');
+            } else {
+                 showToast("خطا: مدال نمایش جزئیات مکان یافت نشد.", "error");
             }
         }
+
+
+        function submitReview(placeId) {
+            const reviewText = document.getElementById('reviewText').value;
+            const reviewRating = parseInt(document.getElementById('reviewRating').value);
+            
+            if (!auth.currentUser) { // Check Firebase Auth user
+                showToast('لطفاً برای ثبت نظر وارد شوید.', 'error');
+                return;
+            }
+
+            if (isNaN(reviewRating) || reviewRating < 1 || reviewRating > 5) {
+                showToast('❌ لطفاً امتیازی بین ۱ تا ۵ وارد کنید.', 'error');
+                return;
+            }
+            
+            if (reviewText.length < 10) {
+                showToast('❌ لطفاً متنی با حداقل ۱۰ کاراکتر وارد کنید.', 'error');
+                return;
+            }
+            
+            showToast('✅ نظر شما در حال ثبت است...', 'info');
+            // Simulate review submission to a backend (or direct to Firestore if you set it up)
+            setTimeout(() => {
+                console.log('New review submitted:', { placeId, reviewRating, reviewText, userId: auth.currentUser.uid });
+                // In a real app, you would save this review to Firestore,
+                // perhaps in a 'reviews' collection, linking it to the placeId and auth.currentUser.uid
+                showToast('✅ نظر شما با موفقیت ثبت شد! پس از تأیید نمایش داده خواهد شد.', 'success');
+                // Optionally clear the form
+                document.getElementById('reviewText').value = '';
+                document.getElementById('reviewRating').value = '';
+            }, 1500);
+        }
         
-        function callPlace(phone) {
-            if (confirm(`آیا می‌خواهید با شماره ${phone} تماس بگیرید؟`)) {
+        // Custom confirmation modal for call/directions instead of alert/confirm
+        function showConfirmationModal(message, onConfirmCallback) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">تایید</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').style.display='none'">×</button>
+                    </div>
+                    <p style="text-align: center; margin-bottom: 20px;">${message}</p>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" id="confirmActionBtn">بله</button>
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').style.display='none'">خیر</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById('confirmActionBtn').onclick = () => {
+                onConfirmCallback();
+                modal.style.display = 'none';
+            };
+        }
+
+        function showCallConfirmation(phone) {
+            showConfirmationModal(`آیا می‌خواهید با شماره ${phone} تماس بگیرید؟`, () => {
                 window.location.href = `tel:${phone}`;
-            }
+                showToast(`در حال برقراری تماس با ${phone}...`, 'info');
+            });
         }
         
-        function getDirections(placeName) {
-            if (confirm(`آیا می‌خواهید مسیریابی به ${placeName} را شروع کنید؟`)) {
-                // In a real app, would integrate with maps
+        function showDirectionsConfirmation(placeName) {
+            showConfirmationModal(`آیا می‌خواهید مسیریابی به ${placeName} را شروع کنید؟`, () => {
+                // In a real app, would integrate with maps like Google Maps API
                 showToast(`مسیریابی به ${placeName} در حال بارگذاری...`, 'success');
-            }
+                // Example of opening Google Maps (might be blocked in iframe)
+                // window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName + ', ' + currentLocation)}`, '_blank');
+            });
         }
         
-        // Utility functions
-        function closeModal(modal) {
-            modal.style.display = 'none';
-            modal.setAttribute('aria-hidden', 'true');
+        // Utility function to close any generic modal
+        function closeModal(modalElement) {
+            if (modalElement) {
+                modalElement.style.display = 'none';
+                modalElement.setAttribute('aria-hidden', 'true');
+            }
         }
         
         function showToast(message, type = 'info') {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
             
+            // Hide any currently visible toast
+            toast.style.display = 'none'; 
+            
             toastMessage.textContent = message;
-            toast.className = 'toast';
+            toast.className = 'toast'; // Reset classes
             toast.classList.add(type);
             toast.style.display = 'flex';
             
             setTimeout(() => {
                 toast.style.display = 'none';
             }, 3000);
+        }
+
+        // --- NEW CODE FOR BUSINESS OWNER ---
+        // Get elements once DOM is ready
+        const addBusinessSection = document.getElementById('addBusinessSection');
+        const businessForm = document.getElementById('businessForm');
+
+        // Function to open the business submission modal
+        function openAddBusinessModal() {
+            if (!auth.currentUser) {
+                showToast('لطفاً برای ثبت کسب و کار خود وارد شوید.', 'error');
+                openLoginModal();
+                return;
+            }
+
+            // Hide all other main content sections
+            document.getElementById('categoriesSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('searchPage').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            
+            // Show the business submission modal
+            addBusinessSection.classList.remove('hidden');
+            addBusinessSection.style.display = 'flex'; // Show modal
+            addBusinessSection.setAttribute('aria-hidden', 'false');
+        }
+
+        // Event listener for handling the submission of the business form
+        businessForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent the default form submission (page reload)
+
+            // Ensure user is logged in before submitting
+            if (!auth.currentUser) {
+                showToast('خطا: برای ثبت کسب و کار باید وارد شده باشید.', 'error');
+                return;
+            }
+
+            // Collect data from the form inputs, including the user's ID
+            const businessData = {
+                name: document.getElementById('businessName').value,
+                category: document.getElementById('businessCategory').value,
+                description: document.getElementById('businessDescription').value,
+                ownerId: auth.currentUser.uid, // Attach the Firebase User ID
+                ownerEmail: auth.currentUser.email, // Store owner's email for convenience
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // For server timestamp
+            };
+
+            showToast('در حال ثبت کسب و کار شما...', 'info'); // Show loading toast
+
+            try {
+                // Send the collected data to your server's API endpoint
+                const response = await fetch('/api/businesses', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // Indicate that we are sending JSON data
+                    },
+                    body: JSON.stringify(businessData), // Convert JavaScript object to JSON string
+                });
+
+                if (response.ok) { // Check if the server response was successful (status 200-299)
+                    showToast('✅ کسب و کار شما با موفقیت ثبت شد!', 'success'); // Show success toast
+                    businessForm.reset(); // Clear the form fields
+                    closeModal(addBusinessSection); // Hide the business submission form modal
+                    // Optionally, you might want to refresh the list of businesses or show a message
+                    fetchAndRenderBusinesses(); // Fetch updated list of businesses (if you want to see them on main page)
+                } else {
+                    // Handle server-side errors (e.g., validation errors)
+                    const errorData = await response.json(); // Try to parse error message from server
+                    showToast(`❌ مشکلی در ثبت کسب و کار شما وجود دارد: ${errorData.message || 'خطای ناشناس'}`, 'error');
+                }
+            } catch (error) {
+                // Handle network errors or issues with the fetch request
+                console.error('خطا:', error);
+                showToast('❌ خطایی در ارتباط با سرور رخ داد. لطفاً اتصال اینترنت خود را بررسی کنید.', 'error');
+            }
+        });
+
+        // Function to fetch and display businesses from the server (placeholder for future use)
+        async function fetchAndRenderBusinesses() {
+            try {
+                const response = await fetch('/api/businesses');
+                const businesses = await response.json();
+                
+                console.log('کسب و کارهای دریافت شده از سرور:', businesses);
+
+                // Example: If you wanted to display these fetched businesses
+                // displayResults(businesses); 
+
+            } catch (error) {
+                console.error('خطا در دریافت کسب و کارها:', error);
+                showToast('❌ خطایی در دریافت اطلاعات کسب و کارها رخ داد.', 'error');
+            }
+        }
+
+        // Update Maps City Stats
+        function updateMapsCityStats() {
+            const selectedCityName = document.getElementById('selectedCityName');
+            const cityCoordinates = document.getElementById('cityCoordinates');
+            const markersCount = document.getElementById('markersCount');
+            
+            if (selectedCityName) {
+                selectedCityName.textContent = currentLocation;
+            }
+            
+            if (cityCoordinates && typeof koorMaps !== 'undefined' && koorMaps) {
+                const coords = koorMaps.getCityCoordinates(currentLocation);
+                if (coords) {
+                    cityCoordinates.textContent = coords.join(', ');
+                }
+            }
+            
+            if (markersCount && typeof koorMaps !== 'undefined' && koorMaps) {
+                markersCount.textContent = koorMaps.markers.length;
+            }
         }

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هوش مصنوعی کور - نمایش قابلیت‌ها</title>
+    <meta name="description" content="نمایش قابلیت‌های هوش مصنوعی کور در جستجو و پیشنهادات">
+    
+    <!-- Preload Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="./main.css" type="text/css">
+    
+    <style>
+        .ai-demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        
+        .ai-demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+        }
+        
+        .ai-demo-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .ai-demo-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .ai-input-group {
+            margin-bottom: 15px;
+        }
+        
+        .ai-input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .ai-input-group input, .ai-input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        
+        .ai-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Vazirmatn', sans-serif;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .ai-button:hover {
+            background: #5a6fd8;
+        }
+        
+        .ai-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .ai-result {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .ai-loading {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .ai-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
+        .ai-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+        
+        .back-button:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="ai-demo-container">
+        <a href="./index.html" class="back-button">← بازگشت به صفحه اصلی</a>
+        
+        <div class="ai-demo-header">
+            <h1>هوش مصنوعی کور</h1>
+            <p>نمایش قابلیت‌های پیشرفته جستجو و پیشنهادات هوشمند</p>
+        </div>
+        
+        <!-- Search Suggestions Demo -->
+        <div class="ai-demo-section">
+            <h3>پیشنهادات جستجوی هوشمند</h3>
+            <div class="ai-input-group">
+                <label for="searchInput">چه چیزی دنبالش می‌گردید؟</label>
+                <input type="text" id="searchInput" placeholder="مثال: باشگاه بدنسازی" value="باشگاه بدنسازی">
+            </div>
+            <div class="ai-input-group">
+                <label for="searchLocation">شهر:</label>
+                <input type="text" id="searchLocation" placeholder="تهران" value="تهران">
+            </div>
+            <button class="ai-button" onclick="generateSearchSuggestions()">تولید پیشنهادات</button>
+            <div id="searchSuggestionsResult" class="ai-result" style="display: none;"></div>
+        </div>
+        
+        <!-- Business Recommendations Demo -->
+        <div class="ai-demo-section">
+            <h3>💡 پیشنهادات کسب و کار</h3>
+            <div class="ai-input-group">
+                <label for="userPreferences">ترجیحات شما:</label>
+                    <textarea id="userPreferences" rows="3" placeholder="مثال: باشگاه نزدیک خانه، قیمت مناسب، تجهیزات جدید">باشگاه نزدیک خانه، قیمت مناسب، تجهیزات جدید</textarea>
+            </div>
+            <div class="ai-input-group">
+                <label for="recLocation">شهر:</label>
+                <input type="text" id="recLocation" placeholder="تهران" value="تهران">
+            </div>
+            <button class="ai-button" onclick="generateBusinessRecommendations()">تولید پیشنهادات</button>
+            <div id="businessRecommendationsResult" class="ai-result" style="display: none;"></div>
+        </div>
+        
+        <!-- Business Description Demo -->
+        <div class="ai-demo-section">
+            <h3>📝 تولید توضیحات کسب و کار</h3>
+            <div class="ai-input-group">
+                <label for="businessName">نام کسب و کار:</label>
+                <input type="text" id="businessName" placeholder="مثال: باشگاه المپیک" value="باشگاه المپیک">
+            </div>
+            <div class="ai-input-group">
+                <label for="businessCategory">دسته‌بندی:</label>
+                <input type="text" id="businessCategory" placeholder="مثال: باشگاه ورزشی" value="باشگاه ورزشی">
+            </div>
+            <div class="ai-input-group">
+                <label for="descLocation">شهر:</label>
+                <input type="text" id="descLocation" placeholder="تهران" value="تهران">
+            </div>
+            <button class="ai-button" onclick="generateBusinessDescription()">تولید توضیحات</button>
+            <div id="businessDescriptionResult" class="ai-result" style="display: none;"></div>
+        </div>
+        
+        <!-- Natural Language Search Demo -->
+        <div class="ai-demo-section">
+            <h3>جستجوی زبان طبیعی</h3>
+            <div class="ai-input-group">
+                <label for="naturalInput">عبارت طبیعی خود را بنویسید:</label>
+                <textarea id="naturalInput" rows="2" placeholder="مثال: دنبال رستوران خوب برای شام خانوادگی می‌گردم">دنبال رستوران خوب برای شام خانوادگی می‌گردم</textarea>
+            </div>
+            <div class="ai-input-group">
+                <label for="nlLocation">شهر:</label>
+                <input type="text" id="nlLocation" placeholder="تهران" value="تهران">
+            </div>
+            <button class="ai-button" onclick="generateNaturalLanguageSearch()">تبدیل به کلمات کلیدی</button>
+            <div id="naturalLanguageResult" class="ai-result" style="display: none;"></div>
+        </div>
+        
+        <!-- AI Status -->
+        <div class="ai-demo-section">
+            <h3>وضعیت هوش مصنوعی</h3>
+            <div id="aiStatus" class="ai-result"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module" src="./firebase-config.js"></script>
+    <script type="module" src="./firebase-utils.js"></script>
+    <script type="module" src="./ai-utils.js"></script>
+    
+    <script type="module">
+        import { 
+            generateSearchSuggestions, 
+            generateBusinessRecommendations, 
+            generateBusinessDescription, 
+            generateSearchQuery,
+            getAIModelInfo,
+            isAIAvailable 
+        } from './ai-utils.js';
+        
+        // Global functions for onclick handlers
+        window.generateSearchSuggestions = async function() {
+            const input = document.getElementById('searchInput').value;
+            const location = document.getElementById('searchLocation').value;
+            const resultDiv = document.getElementById('searchSuggestionsResult');
+            
+            if (!input.trim()) {
+                alert('لطفاً عبارت جستجو را وارد کنید');
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="ai-loading">در حال تولید پیشنهادات...</div>';
+            
+            try {
+                const result = await generateSearchSuggestions(input, location);
+                if (result.success) {
+                    resultDiv.innerHTML = `<div class="ai-success">پیشنهادات تولید شده:</div>\n${JSON.stringify(result.suggestions, null, 2)}`;
+                } else {
+                    resultDiv.innerHTML = `<div class="ai-error">خطا: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="ai-error">خطا: ${error.message}</div>`;
+            }
+        };
+        
+        window.generateBusinessRecommendations = async function() {
+            const preferences = document.getElementById('userPreferences').value;
+            const location = document.getElementById('recLocation').value;
+            const resultDiv = document.getElementById('businessRecommendationsResult');
+            
+            if (!preferences.trim()) {
+                alert('لطفاً ترجیحات خود را وارد کنید');
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="ai-loading">در حال تولید پیشنهادات...</div>';
+            
+            try {
+                const result = await generateBusinessRecommendations(preferences, location);
+                if (result.success) {
+                    resultDiv.innerHTML = `<div class="ai-success">پیشنهادات کسب و کار:</div>\n${JSON.stringify(result.recommendations, null, 2)}`;
+                } else {
+                    resultDiv.innerHTML = `<div class="ai-error">خطا: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="ai-error">خطا: ${error.message}</div>`;
+            }
+        };
+        
+        window.generateBusinessDescription = async function() {
+            const name = document.getElementById('businessName').value;
+            const category = document.getElementById('businessCategory').value;
+            const location = document.getElementById('descLocation').value;
+            const resultDiv = document.getElementById('businessDescriptionResult');
+            
+            if (!name.trim() || !category.trim()) {
+                alert('لطفاً نام و دسته‌بندی کسب و کار را وارد کنید');
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="ai-loading">در حال تولید توضیحات...</div>';
+            
+            try {
+                const result = await generateBusinessDescription(name, category, location);
+                if (result.success) {
+                    resultDiv.innerHTML = `<div class="ai-success">توضیحات تولید شده:</div>\n${result.description}`;
+                } else {
+                    resultDiv.innerHTML = `<div class="ai-error">خطا: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="ai-error">خطا: ${error.message}</div>`;
+            }
+        };
+        
+        window.generateNaturalLanguageSearch = async function() {
+            const input = document.getElementById('naturalInput').value;
+            const location = document.getElementById('nlLocation').value;
+            const resultDiv = document.getElementById('naturalLanguageResult');
+            
+            if (!input.trim()) {
+                alert('لطفاً عبارت طبیعی را وارد کنید');
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="ai-loading">در حال تبدیل...</div>';
+            
+            try {
+                const result = await generateSearchQuery(input, location);
+                if (result.success) {
+                    resultDiv.innerHTML = `<div class="ai-success">کلمات کلیدی استخراج شده:</div>\n${JSON.stringify(result.keywords, null, 2)}`;
+                } else {
+                    resultDiv.innerHTML = `<div class="ai-error">خطا: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="ai-error">خطا: ${error.message}</div>`;
+            }
+        };
+        
+        // Check AI status on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const statusDiv = document.getElementById('aiStatus');
+            const aiInfo = getAIModelInfo();
+            
+            if (aiInfo.available) {
+                statusDiv.innerHTML = `<div class="ai-success">✅ هوش مصنوعی فعال</div>
+مدل: ${aiInfo.model}
+ارائه‌دهنده: ${aiInfo.provider}`;
+            } else {
+                statusDiv.innerHTML = `<div class="ai-error">❌ هوش مصنوعی غیرفعال</div>
+لطفاً تنظیمات Firebase AI را بررسی کنید.`;
+            }
+        });
+    </script>
+</body>
+</html>
