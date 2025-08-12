@@ -1,215 +1,425 @@
-// UI utilities for displaying results and managing user interface
-import { getPlaceDetails, getPlaceReviews } from './api.js';
+// ابزارها و اجزای رابط کاربری برای اپلیکیشن فارسی‌محور کوره
+import { getPlaceDetails, getPlaceReviews } from './firebase-places.js';
 
-// Show loading indicator
-export function showLoading() {
-  const loading = document.getElementById('loading');
-  if (loading) {
-    loading.style.display = 'flex';
-  }
+// برچسب‌های دسته‌بندی فارسی
+const CATEGORY_LABELS = {
+  restaurant: 'رستوران',
+  cafe: 'کافه',
+  hotel: 'هتل',
+  attraction: 'جاذبه',
+  shopping: 'مرکز خرید',
+  gym: 'باشگاه',
+  salon: 'آرایشگاه',
+  barber: 'آرایشگاه مردانه',
+  school: 'آموزشگاه',
+  clinic: 'کلینیک'
+};
+
+// برچسب‌های امتیازدهی فارسی
+const RATING_LABELS = {
+  1: 'خیلی ضعیف',
+  2: 'ضعیف',
+  3: 'متوسط',
+  4: 'خوب',
+  5: 'عالی'
+};
+
+// تابع تبدیل اعداد انگلیسی به فارسی
+function toPersianNumbers(num) {
+  const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  return num.toString().replace(/\d/g, (d) => persianNumbers[d]);
 }
 
-// Hide loading indicator
-export function hideLoading() {
-  const loading = document.getElementById('loading');
-  if (loading) {
-    loading.style.display = 'none';
-  }
-}
-
-// Display search results
 export function displayResults(results) {
-  const resultsContainer = document.getElementById('resultsContainer');
-  if (!resultsContainer) return;
+  const container = document.getElementById('placesContainer');
+  if (!container) return;
 
-  if (!results || results.length === 0) {
-    resultsContainer.innerHTML = `
+  if (results.length === 0) {
+    container.innerHTML = `
       <div class="no-results">
-        <p>No places found. Try adjusting your search criteria.</p>
+        <div class="no-results-icon">🔍</div>
+        <h3 class="no-results-title">مکانی یافت نشد</h3>
+        <p class="no-results-description">لطفاً کلمات کلیدی دیگری امتحان کنید یا دسته‌بندی را تغییر دهید</p>
       </div>
     `;
     return;
   }
 
   const resultsHTML = results.map(place => createPlaceCard(place)).join('');
-  resultsContainer.innerHTML = resultsHTML;
+  container.innerHTML = resultsHTML;
 
-  // Add event listeners to place cards
+  // افزودن گوش‌دهندگان رویداد به کارت‌های مکان
   addPlaceCardEventListeners();
 }
 
-// Create a place card HTML
 function createPlaceCard(place) {
-  const rating = place.rating || 'N/A';
-  const ratingText = place.rating ? `${place.rating}/5` : 'No rating';
-  const photo = place.photos && place.photos[0] ? place.photos[0] : '/placeholder-image.jpg';
+  const categoryLabel = CATEGORY_LABELS[place.types?.[0]] || 'مکان';
+  const rating = place.rating || 0;
+  const reviewCount = place.user_ratings_total || 0;
   
   return `
-    <div class="place-card" data-place-id="${place.place_id || place.id}">
+    <div class="place-card" data-place-id="${place.place_id}">
       <div class="place-image">
-        <img src="${photo}" alt="${place.name}" loading="lazy">
+        <img src="${place.photos?.[0] || 'https://via.placeholder.com/300x200/f3f4f6/9ca3af?text=تصویر+موجود+نیست'}" 
+             alt="${place.name}" 
+             loading="lazy"
+             onerror="this.src='https://via.placeholder.com/300x200/f3f4f6/9ca3af?text=تصویر+موجود+نیست'">
+        <div class="place-category">${categoryLabel}</div>
       </div>
-      <div class="place-info">
-        <h3 class="place-name">${place.name}</h3>
-        <p class="place-address">${place.vicinity || place.address || 'Address not available'}</p>
-        <div class="place-rating">
-          <span class="rating-stars">${generateStarRating(rating)}</span>
-          <span class="rating-text">${ratingText}</span>
+      
+      <div class="place-content">
+        <div class="place-header">
+          <h3 class="place-name">${place.name}</h3>
+          <div class="place-rating">
+            <div class="rating-stars">
+              ${generateStarRating(rating)}
+            </div>
+            <span class="rating-text">${RATING_LABELS[Math.round(rating)] || 'بدون امتیاز'}</span>
+          </div>
         </div>
-        <div class="place-types">
-          ${place.types ? place.types.slice(0, 3).map(type => 
-            `<span class="type-tag">${type.replace(/_/g, ' ')}</span>`
-          ).join('') : ''}
+        
+        <div class="place-details">
+          <div class="place-address">
+            <span class="detail-icon">📍</span>
+            <span>${place.vicinity || place.formatted_address || 'آدرس موجود نیست'}</span>
+          </div>
+          
+          ${reviewCount > 0 ? `
+            <div class="place-reviews">
+              <span class="detail-icon">💬</span>
+              <span>${toPersianNumbers(reviewCount)} نظر</span>
+            </div>
+          ` : ''}
         </div>
+        
         <div class="place-actions">
-          <button class="btn btn-primary btn-sm view-details">View Details</button>
-          <button class="btn btn-secondary btn-sm get-directions">Get Directions</button>
+          <button class="btn btn-outline btn-details" onclick="showPlaceDetails('${place.place_id}')">
+            <span class="btn-icon">ℹ️</span>
+            جزئیات بیشتر
+          </button>
+          <button class="btn btn-outline btn-reviews" onclick="showPlaceReviews('${place.place_id}')">
+            <span class="btn-icon">⭐</span>
+            نظرات
+          </button>
         </div>
       </div>
     </div>
   `;
 }
 
-// Generate star rating HTML
 function generateStarRating(rating) {
-  if (!rating || rating === 'N/A') return '☆☆☆☆☆';
-  
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
   
-  return '★'.repeat(fullStars) + (hasHalfStar ? '☆' : '') + '☆'.repeat(emptyStars);
+  let stars = '';
+  
+  // ستاره‌های کامل
+  for (let i = 0; i < fullStars; i++) {
+    stars += '<span class="star star-full">⭐</span>';
+  }
+  
+  // نیم ستاره
+  if (hasHalfStar) {
+    stars += '<span class="star star-half">⭐</span>';
+  }
+  
+  // ستاره‌های خالی
+  for (let i = 0; i < emptyStars; i++) {
+    stars += '<span class="star star-empty">☆</span>';
+  }
+  
+  return stars;
 }
 
-// Add event listeners to place cards
 function addPlaceCardEventListeners() {
   const placeCards = document.querySelectorAll('.place-card');
-  
   placeCards.forEach(card => {
-    const placeId = card.dataset.placeId;
-    const viewDetailsBtn = card.querySelector('.view-details');
-    const getDirectionsBtn = card.querySelector('.get-directions');
-    
-    if (viewDetailsBtn) {
-      viewDetailsBtn.addEventListener('click', () => showPlaceDetails(placeId));
-    }
-    
-    if (getDirectionsBtn) {
-      getDirectionsBtn.addEventListener('click', () => getDirections(placeId));
-    }
+    card.addEventListener('click', (e) => {
+      // اگر روی دکمه‌ها کلیک شده، فعال نشود
+      if (e.target.closest('.btn')) return;
+      
+      const placeId = card.dataset.placeId;
+      showPlaceDetails(placeId);
+    });
   });
 }
 
-// Show place details modal
-async function showPlaceDetails(placeId) {
+export async function showPlaceDetails(placeId) {
   try {
     showLoading();
     
-    const [placeDetails, reviews] = await Promise.all([
-      getPlaceDetails(placeId),
-      getPlaceReviews(placeId)
-    ]);
+    const place = await getPlaceDetails(placeId);
+    const reviews = await getPlaceReviews(placeId);
     
-    createPlaceDetailsModal(placeDetails, reviews);
+    const modal = createPlaceDetailsModal(place, reviews);
+    document.body.appendChild(modal);
+    
+    // نمایش مودال
+    setTimeout(() => {
+      modal.classList.add('show');
+    }, 100);
+    
+    // عملکرد بستن مودال
+    const closeBtn = modal.querySelector('.modal-close');
+    const overlay = modal.querySelector('.modal-overlay');
+    
+    closeBtn.addEventListener('click', () => closeModal(modal));
+    overlay.addEventListener('click', () => closeModal(modal));
+    
+    // بستن با کلید Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal(modal);
+      }
+    });
     
   } catch (error) {
-    console.error('Failed to load place details:', error);
-    alert('Failed to load place details. Please try again.');
+    console.error('خطا در بارگذاری جزئیات مکان:', error);
+    showNotification('خطا در بارگذاری جزئیات مکان', 'error');
   } finally {
     hideLoading();
   }
 }
 
-// Create place details modal
-function createPlaceDetailsModal(place, reviews) {
-  // Remove existing modal if any
-  const existingModal = document.querySelector('.modal');
-  if (existingModal) {
-    existingModal.remove();
+export async function showPlaceReviews(placeId) {
+  try {
+    showLoading();
+    
+    const place = await getPlaceDetails(placeId);
+    const reviews = await getPlaceReviews(placeId);
+    
+    const modal = createReviewsModal(place, reviews);
+    document.body.appendChild(modal);
+    
+    // نمایش مودال
+    setTimeout(() => {
+      modal.classList.add('show');
+    }, 100);
+    
+    // عملکرد بستن مودال
+    const closeBtn = modal.querySelector('.modal-close');
+    const overlay = modal.querySelector('.modal-overlay');
+    
+    closeBtn.addEventListener('click', () => closeModal(modal));
+    overlay.addEventListener('click', () => closeModal(modal));
+    
+    // بستن با کلید Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal(modal);
+      }
+    });
+    
+  } catch (error) {
+    console.error('خطا در بارگذاری نظرات:', error);
+    showNotification('خطا در بارگذاری نظرات', 'error');
+  } finally {
+    hideLoading();
   }
+}
+
+function createPlaceDetailsModal(place, reviews) {
+  const categoryLabel = CATEGORY_LABELS[place.types?.[0]] || 'مکان';
+  const rating = place.rating || 0;
+  const reviewCount = place.user_ratings_total || 0;
   
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.innerHTML = `
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>${place.name}</h2>
-        <button class="modal-close">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="place-details">
-          <div class="place-photos">
-            ${place.photos ? place.photos.map(photo => 
-              `<img src="${photo}" alt="${place.name}" loading="lazy">`
-            ).join('') : '<p>No photos available</p>'}
-          </div>
-          <div class="place-info-detailed">
-            <p><strong>Address:</strong> ${place.vicinity || place.address || 'Not available'}</p>
-            <p><strong>Rating:</strong> ${place.rating || 'N/A'}/5 (${place.user_ratings_total || 0} reviews)</p>
-            <p><strong>Types:</strong> ${place.types ? place.types.join(', ') : 'Not specified'}</p>
-            ${place.opening_hours ? `<p><strong>Open now:</strong> ${place.opening_hours.open_now ? 'Yes' : 'No'}</p>` : ''}
-            ${place.price_level ? `<p><strong>Price level:</strong> ${'$'.repeat(place.price_level)}</p>` : ''}
-          </div>
+  return `
+    <div class="modal" id="placeDetailsModal">
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">جزئیات ${place.name}</h2>
+          <button class="modal-close" aria-label="بستن">×</button>
         </div>
-        <div class="place-reviews">
-          <h3>Reviews</h3>
-          ${reviews && reviews.length > 0 ? 
-            reviews.map(review => `
-              <div class="review">
-                <div class="review-header">
-                  <span class="review-author">${review.author_name}</span>
-                  <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</span>
-                  <span class="review-time">${new Date(review.time * 1000).toLocaleDateString()}</span>
+        
+        <div class="modal-body">
+          <div class="place-details-grid">
+            <div class="place-image-large">
+              <img src="${place.photos?.[0] || 'https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=تصویر+موجود+نیست'}" 
+                   alt="${place.name}" 
+                   loading="lazy">
+            </div>
+            
+            <div class="place-info">
+              <div class="place-category-badge">${categoryLabel}</div>
+              
+              <div class="place-rating-large">
+                <div class="rating-stars-large">
+                  ${generateStarRating(rating)}
                 </div>
-                <p class="review-text">${review.text}</p>
+                <div class="rating-details">
+                  <span class="rating-score">${toPersianNumbers(rating.toFixed(1))}</span>
+                  <span class="rating-label">${RATING_LABELS[Math.round(rating)] || 'بدون امتیاز'}</span>
+                  <span class="rating-count">${toPersianNumbers(reviewCount)} نظر</span>
+                </div>
               </div>
-            `).join('') : '<p>No reviews available</p>'
-          }
+              
+              <div class="place-address-large">
+                <span class="detail-icon">📍</span>
+                <span>${place.formatted_address || place.vicinity || 'آدرس موجود نیست'}</span>
+              </div>
+              
+              ${place.opening_hours ? `
+                <div class="place-hours">
+                  <span class="detail-icon">🕒</span>
+                  <span>${place.opening_hours.open_now ? 'در حال حاضر باز است' : 'در حال حاضر بسته است'}</span>
+                </div>
+              ` : ''}
+              
+              ${place.price_level ? `
+                <div class="place-price">
+                  <span class="detail-icon">💰</span>
+                  <span>سطح قیمت: ${'$'.repeat(place.price_level)}</span>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+          
+          ${reviews.length > 0 ? `
+            <div class="reviews-preview">
+              <h3 class="reviews-title">آخرین نظرات</h3>
+              <div class="reviews-list">
+                ${reviews.slice(0, 3).map(review => createReviewItem(review)).join('')}
+              </div>
+              ${reviews.length > 3 ? `
+                <button class="btn btn-outline btn-full" onclick="showPlaceReviews('${place.place_id}')">
+                  مشاهده همه نظرات (${toPersianNumbers(reviews.length)})
+                </button>
+              ` : ''}
+            </div>
+          ` : ''}
         </div>
       </div>
     </div>
   `;
+}
+
+function createReviewsModal(place, reviews) {
+  const categoryLabel = CATEGORY_LABELS[place.types?.[0]] || 'مکان';
   
-  document.body.appendChild(modal);
-  
-  // Add event listeners
-  const closeBtn = modal.querySelector('.modal-close');
-  closeBtn.addEventListener('click', () => modal.remove());
-  
-  // Close modal when clicking outside
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.remove();
-    }
+  return `
+    <div class="modal" id="reviewsModal">
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">نظرات ${place.name}</h2>
+          <button class="modal-close" aria-label="بستن">×</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="place-summary">
+            <div class="place-category-badge">${categoryLabel}</div>
+            <h3 class="place-name">${place.name}</h3>
+          </div>
+          
+          ${reviews.length > 0 ? `
+            <div class="reviews-container">
+              <div class="reviews-stats">
+                <span class="reviews-count">${toPersianNumbers(reviews.length)} نظر</span>
+                <span class="reviews-average">میانگین امتیاز: ${toPersianNumbers((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1))}</span>
+              </div>
+              
+              <div class="reviews-list-full">
+                ${reviews.map(review => createReviewItem(review, true)).join('')}
+              </div>
+            </div>
+          ` : `
+            <div class="no-reviews">
+              <div class="no-reviews-icon">💬</div>
+              <h3 class="no-reviews-title">هنوز نظری ثبت نشده</h3>
+              <p class="no-reviews-description">اولین نفری باشید که نظر می‌دهد</p>
+            </div>
+          `}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function createReviewItem(review, full = false) {
+  const date = new Date(review.time * 1000);
+  const formattedDate = date.toLocaleDateString('fa-IR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
   
-  // Show modal
-  setTimeout(() => modal.classList.add('show'), 10);
+  return `
+    <div class="review-item ${full ? 'review-item-full' : ''}">
+      <div class="review-header">
+        <div class="review-author">${review.author_name}</div>
+        <div class="review-rating">
+          ${generateStarRating(review.rating)}
+        </div>
+        <div class="review-date">${formattedDate}</div>
+      </div>
+      
+      ${review.text ? `
+        <div class="review-text">${review.text}</div>
+      ` : ''}
+    </div>
+  `;
 }
 
-// Get directions to a place
-function getDirections(placeId) {
-  // This would integrate with Google Maps or other mapping service
-  alert('Directions feature coming soon!');
-}
-
-// Show notification
-export function showNotification(message, type = 'info') {
-  const notification = document.createElement('div');
-  notification.className = `notification notification-${type}`;
-  notification.textContent = message;
-  
-  document.body.appendChild(notification);
-  
-  // Show notification
-  setTimeout(() => notification.classList.add('show'), 10);
-  
-  // Auto-hide after 3 seconds
+function closeModal(modal) {
+  modal.classList.remove('show');
   setTimeout(() => {
-    notification.classList.remove('show');
-    setTimeout(() => notification.remove(), 300);
-  }, 3000);
+    if (modal.parentElement) {
+      modal.remove();
+    }
+  }, 300);
+}
+
+export function showLoading() {
+  // ایجاد نشانگر بارگذاری
+  const loading = document.createElement('div');
+  loading.id = 'loading';
+  loading.className = 'loading';
+  loading.innerHTML = `
+    <div class="loading-spinner"></div>
+    <p class="loading-text">در حال بارگذاری...</p>
+  `;
+  
+  document.body.appendChild(loading);
+  
+  // نمایش با انیمیشن
+  setTimeout(() => {
+    loading.classList.add('show');
+  }, 10);
+}
+
+export function hideLoading() {
+  const loading = document.getElementById('loading');
+  if (loading) {
+    loading.classList.remove('show');
+    setTimeout(() => {
+      if (loading.parentElement) {
+        loading.remove();
+      }
+    }, 300);
+  }
+}
+
+// نمایش اعلان
+export function showNotification(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+  
+  if (toast && toastMessage) {
+    toastMessage.textContent = message;
+    toast.classList.add('show');
+    
+    // مخفی کردن خودکار پس از ۳ ثانیه
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
 }
 
 // Export for testing
 export { createPlaceCard, generateStarRating };
+
+// Make functions globally available for onclick handlers
+window.showPlaceDetails = showPlaceDetails;
+window.showPlaceReviews = showPlaceReviews;

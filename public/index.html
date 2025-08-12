@@ -1,478 +1,0 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>کوره - بهترین مکان رو پیدا کن</title>
-    <meta name="description" content="کوره - پلتفرم جستجو و کشف بهترین مکان‌های ایران. باشگاه، آرایشگاه، رستوران و بیشتر">
-    <meta name="keywords" content="کوره، باشگاه، آرایشگاه، رستوران، تهران، جستجو مکان">
-    
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="کوره - بهترین مکان رو پیدا کن">
-    <meta property="og:description" content="کوره - پلتفرم جستجو و کشف بهترین مکان‌های ایران. باشگاه، آرایشگاه، رستوران و بیشتر">
-    <meta property="og:image" content="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
-    <meta property="og:url" content="https://yourdomain.com">
-    <meta property="og:type" content="website">
-    
-    <!-- Schema Markup -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "کوره",
-      "url": "https://yourdomain.com",
-      "description": "پلتفرم جستجو و کشف بهترین مکان‌های ایران",
-      "applicationCategory": "Business Finder",
-      "operatingSystem": "All",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "IRR"
-      }
-    }
-    </script>
-    
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#3182ce">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="کوره">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
-    
-    <!-- Preload Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript>
-        <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    </noscript>
-
-  <link rel="stylesheet" href="./main.css" type="text/css">
-  <link rel="stylesheet" href="./query/desktop.css" type="text/css">
-
-</head>
-<body>
-    <div class="container">
-        <header class="header">
-            <div class="header-top">
-                <a href="./index.html"><div class="logo"><img src="./image/ChatGPT Image Aug 11, 2025, 04_58_02 PM.png" alt=""></div></a>
-                <button class="location-btn" onclick="openCitySelector()" aria-label="تغییر مکان">
-                    <span>📍</span>
-                    <span id="currentLocation">تهران</span>
-                    <span>▼</span>
-                </button>
-            </div>
-            <div class="search-container">
-                <input type="text" class="search-input" placeholder="دنبال چی می‌گردی؟" 
-                       oninput="handleSearch()" onblur="hideSearchSuggestions()"
-                       aria-label="جستجوی مکان">
-                <div class="search-suggestions" id="searchSuggestions">
-                    <!-- Suggestions will be populated dynamically -->
-                </div>
-            </div>
-        </header>
-        
-        <section class="categories" id="categoriesSection">
-            <h2 class="categories-title">چی دنبالشی؟</h2>
-            <div class="category-grid">
-                <div class="category-card" data-category="gym" onclick="selectCategory('gym')" 
-                     tabindex="0" role="button" aria-label="انتخاب باشگاه">
-                    <span class="category-icon">💪</span>
-                    <span class="category-name">باشگاه</span>
-                </div>
-                <div class="category-card" data-category="salon" onclick="selectCategory('salon')"
-                     tabindex="0" role="button" aria-label="انتخاب آرایشگاه">
-                    <span class="category-icon">💇</span>
-                    <span class="category-name">آرایشگاه</span>
-                </div>
-                <div class="category-card" data-category="barber" onclick="selectCategory('barber')"
-                     tabindex="0" role="button" aria-label="انتخاب آرایشگاه مردانه">
-                    <span class="category-icon">✂</span>
-                    <span class="category-name">آرایشگاه مردانه</span>
-                </div>
-                <div class="category-card" data-category="school" onclick="selectCategory('school')"
-                     tabindex="0" role="button" aria-label="انتخاب آموزشگاه">
-                    <span class="category-icon">📚</span>
-                    <span class="category-name">آموزشگاه</span>
-                </div>
-                <div class="category-card" data-category="clinic" onclick="selectCategory('clinic')"
-                     tabindex="0" role="button" aria-label="انتخاب کلینیک">
-                    <span class="category-icon">🏥</span>
-                    <span class="category-name">کلینیک</span>
-                </div>
-                <div class="category-card" data-category="restaurant" onclick="selectCategory('restaurant')"
-                     tabindex="0" role="button" aria-label="انتخاب رستوران">
-                    <span class="category-icon">🍽</span>
-                    <span class="category-name">رستوران</span>
-                </div>
-            </div>
-        </section>
-        
-        <section class="results-section" id="resultsSection" style="display: none;">
-            <div class="results-header">
-                <div>
-                    <h3 class="results-title" id="resultsTitle">باشگاه‌های تهران</h3>
-                    <div class="results-count" id="resultsCount">۱۲ نتیجه یافت شد</div>
-                </div>
-                <button class="filter-btn" onclick="openFilters()" aria-label="باز کردن فیلترها">
-                    <span>⚙</span>
-                    <span>فیلتر</span>
-                </button>
-            </div>
-            <div id="placesContainer">
-                <!-- Place cards will be dynamically inserted here -->
-            </div>
-        </section>
-        
-        <section class="search-page" id="searchPage">
-            <div class="search-header">
-                <h2 class="search-title">جستجو در کوره</h2>
-                <p>بهترین مکان‌ها را پیدا کنید</p>
-            </div>
-            
-            <div class="recent-searches">
-                <h3 class="recent-title">جستجوهای اخیر</h3>
-                <div class="recent-item" onclick="selectSuggestion('باشگاه بدنسازی')">
-                    <span class="search-icon">🔍</span>
-                    <span>باشگاه بدنسازی</span>
-                </div>
-                <div class="recent-item" onclick="selectSuggestion('سالن آرایش')">
-                    <span class="search-icon">🔍</span>
-                    <span>سالن آرایش</span>
-                </div>
-                <div class="recent-item" onclick="selectSuggestion('رستوران ایرانی')">
-                    <span class="search-icon">🔍</span>
-                    <span>رستوران ایرانی</span>
-                </div>
-            </div>
-            
-            <div class="popular-searches">
-                <h3 class="popular-title">جستجوهای پرطرفدار</h3>
-                <div class="popular-tags">
-                    <div class="popular-tag" onclick="selectSuggestion('آرایشگاه زنانه')">آرایشگاه زنانه</div>
-                    <div class="popular-tag" onclick="selectSuggestion('کافه')">کافه</div>
-                    <div class="popular-tag" onclick="selectSuggestion('آموزشگاه زبان')">آموزشگاه زبان</div>
-                    <div class="popular-tag" onclick="selectSuggestion('کلینیک دندان')">کلینیک دندان</div>
-                    <div class="popular-tag" onclick="selectSuggestion('باشگاه فیتنس')">باشگاه فیتنس</div>
-                    <div class="popular-tag" onclick="selectSuggestion('رستوران فست فود')">رستوران فست فود</div>
-                </div>
-            </div>
-        </section>
-        
-        <section class="profile-section" id="profileSection">
-            <div class="profile-header">
-                <div class="profile-avatar">👤</div>
-                <div class="profile-info">
-                    <div class="profile-name" id="profileName">کاربر مهمان</div>
-                    <div class="profile-email" id="profileEmail">-</div>
-                </div>
-            </div>
-            
-            <div class="profile-stats">
-                <div class="stat-card">
-                    <div class="stat-value" id="favoritesCount">0</div>
-                    <div class="stat-label">علاقه‌مندی‌ها</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="reviewsCount">0</div>
-                    <div class="stat-label">نظرات</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="visitsCount">0</div>
-                    <div class="stat-label">بازدیدها</div>
-                </div>
-            </div>
-            
-            <div class="profile-actions">
-                <button class="profile-action-btn" id="loginRegisterBtn">
-                    <span>ورود / ثبت نام</span>
-                    <span class="icon">👤</span>
-                </button>
-                <button class="profile-action-btn" onclick="showFavorites()">
-                    <span>مکان‌های مورد علاقه</span>
-                    <span class="icon">❤</span>
-                </button>
-                <button class="profile-action-btn" onclick="showSettings()">
-                    <span>تنظیمات</span>
-                    <span class="icon">⚙</span>
-                </button>
-                <button class="profile-action-btn hidden" id="logoutBtn">
-                    <span>خروج از حساب</span>
-                    <span class="icon">🚪</span>
-                </button>
-                <!-- NEW: Business Owner Button -->
-                <button id="addBusinessBtn" class="profile-action-btn btn-primary" style="margin-top: 10px;">
-                    <span>ثبت کسب و کار شما</span>
-                    <span class="icon">🏢</span>
-                </button>
-            </div>
-        </section>
-        
-        <nav class="bottom-nav" role="navigation" aria-label="ناوبری اصلی">
-            <div class="nav-item active" onclick="selectNavItem(this, 'home')" 
-                 tabindex="0" role="button" aria-label="خانه">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-label">خانه</span>
-            </div>
-            <div class="nav-item" onclick="selectNavItem(this, 'search')"
-                 tabindex="0" role="button" aria-label="جستجو">
-                <span class="nav-icon">🔍</span>
-                <span class="nav-label">جستجو</span>
-            </div>
-            <div class="nav-item" onclick="selectNavItem(this, 'maps')"
-                 tabindex="0" role="button" aria-label="نقشه">
-                <span class="nav-icon">🗺</span>
-                <span class="nav-label">نقشه</span>
-            </div>
-            <div class="nav-item" onclick="selectNavItem(this, 'favorites')"
-                 tabindex="0" role="button" aria-label="علاقه‌مندی‌ها">
-                <span class="nav-icon">❤</span>
-                <span class="nav-label">علاقه‌مندی‌ها</span>
-            </div>
-            <div class="nav-item" onclick="selectNavItem(this, 'profile')"
-                 tabindex="0" role="button" aria-label="پروفایل">
-                <span class="nav-icon">👤</span>
-                <span class="nav-label">پروفایل</span>
-            </div>
-        </nav>
-        
-        <!-- NEW: Maps Section -->
-        <section class="maps-section" id="mapsSection" style="display: none;">
-            <div class="maps-header">
-                <h2 class="maps-title">🗺 نقشه شهر</h2>
-                <p class="maps-subtitle">مشاهده نقشه <span id="mapsCityName">تهران</span> و مکان‌های اطراف</p>
-            </div>
-            
-            <div class="maps-controls">
-                <div class="map-control-group">
-                    <button class="map-control-btn" onclick="koorehMaps?.getCurrentLocation()">
-                        📍 موقعیت فعلی
-                    </button>
-                    <button class="map-control-btn" onclick="koorehMaps?.searchNearbyPlaces()">
-                        🔍 مکان‌های نزدیک
-                    </button>
-                    <button class="map-control-btn" onclick="koorehMaps?.showCityBoundaries()">
-                        🏙 محدوده شهر
-                    </button>
-                    <button class="map-control-btn" onclick="koorehMaps?.clearMarkers()">
-                        🗑 پاک کردن نشانه‌ها
-                    </button>
-                </div>
-            </div>
-            
-            <div class="map-container">
-                <div id="cityMap"></div>
-            </div>
-            
-            <div class="maps-info">
-                <div class="city-stats">
-                    <div class="stat-item">
-                        <span class="stat-icon">📍</span>
-                        <span class="stat-label">شهر انتخاب شده:</span>
-                        <span class="stat-value" id="selectedCityName">تهران</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-icon">🌍</span>
-                        <span class="stat-label">مختصات:</span>
-                        <span class="stat-value" id="cityCoordinates">35.689, 51.389</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-icon">🎯</span>
-                        <span class="stat-label">نشانه‌ها:</span>
-                        <span class="stat-value" id="markersCount">1</span>
-                    </div>
-                </div>
-                
-                <div class="map-features">
-                    <h4>✨ ویژگی‌های نقشه:</h4>
-                    <ul>
-                        <li>🗺 نقشه دقیق شهرهای ایران با Neshan</li>
-                        <li>📍 نمایش موقعیت فعلی شما</li>
-                        <li>🔍 جستجوی مکان‌های نزدیک</li>
-                        <li>🏙 نمایش محدوده شهر</li>
-                        <li>🎯 افزودن نشانه‌های سفارشی</li>
-                        <li>📱 سازگار با موبایل و دسکتاپ</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-        
-        <div class="modal" id="filtersModal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="modal-title">فیلترها</h3>
-                    <button class="close-btn" onclick="closeFilters()" aria-label="بستن فیلترها">×</button>
-                </div>
-                <div class="filter-group">
-                    <h4 class="filter-group-title">قیمت</h4>
-                    <div class="filter-options">
-                        <div class="filter-option" data-filter="price-low">زیر ۲۰۰ هزار تومان</div>
-                        <div class="filter-option" data-filter="price-mid">۲۰۰ - ۴۰۰ هزار تومان</div>
-                        <div class="filter-option" data-filter="price-high">بالای ۴۰۰ هزار تومان</div>
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <h4 class="filter-group-title">فاصله</h4>
-                    <div class="filter-options">
-                        <div class="filter-option" data-filter="distance-1">کمتر از ۱ کیلومتر</div>
-                        <div class="filter-option" data-filter="distance-3">۱ - ۳ کیلومتر</div>
-                        <div class="filter-option" data-filter="distance-5">۳ - ۵ کیلومتر</div>
-                        <div class="filter-option" data-filter="distance-more">بالای ۵ کیلومتر</div>
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <h4 class="filter-group-title">امکانات</h4>
-                    <div class="filter-options">
-                        <div class="filter-option" data-filter="feature-parking">پارکینگ</div>
-                        <div class="filter-option" data-filter="feature-sauna">سونا</div>
-                        <div class="filter-option" data-filter="feature-pool">استخر</div>
-                        <div class="filter-option" data-filter="feature-classes">کلاس گروهی</div>
-                        <div class="filter-option" data-filter="feature-trainer">مربی شخصی</div>
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <h4 class="filter-group-title">امتیاز</h4>
-                    <div class="filter-options">
-                        <div class="filter-option" data-filter="rating-5">★★★★★ (۵ ستاره)</div>
-                        <div class="filter-option" data-filter="rating-4">★★★★ (۴ ستاره و بالاتر)</div>
-                        <div class="filter-option" data-filter="rating-3">★★★ (۳ ستاره و بالاتر)</div>
-                    </div>
-                </div>
-                <button class="action-btn primary" style="width: 100%; margin-top: 24px;" onclick="applyFilters()">
-                    اعمال فیلترها
-                </button>
-            </div>
-        </div>
-        
-        <div class="modal login-modal" id="loginModal" role="dialog" aria-labelledby="login-title" aria-hidden="true">
-            <div class="modal-content">
-                <div class="login-header">
-                    <h3 class="login-title">ورود به حساب</h3>
-                    <p class="login-subtitle">لطفاً اطلاعات خود را وارد کنید</p>
-                </div>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label class="form-label" for="loginEmail">ایمیل</label>
-                        <input type="email" id="loginEmail" class="form-input" placeholder="example@email.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="loginPassword">رمز عبور</label>
-                        <input type="password" id="loginPassword" class="form-input" placeholder="رمز عبور خود را وارد کنید" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">ورود</button>
-                        <button type="button" class="btn btn-secondary" onclick="switchToRegister()">حساب ندارید؟ ثبت نام کنید</button>
-                    </div>
-                </form>
-                <div class="form-footer">
-                    <a href="#" class="form-link">رمز عبور خود را فراموش کرده‌اید؟</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="modal login-modal" id="registerModal" role="dialog" aria-labelledby="register-title" aria-hidden="true">
-            <div class="modal-content">
-                <div class="login-header">
-                    <h3 class="login-title">ثبت نام</h3>
-                    <p class="login-subtitle">حساب کاربری خود را ایجاد کنید</p>
-                </div>
-                <form id="registerForm">
-                    <div class="form-group">
-                        <label class="form-label" for="regName">نام و نام خانوادگی</label>
-                        <input type="text" id="regName" class="form-input" placeholder="نام شما" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="regEmail">ایمیل</label>
-                        <input type="email" id="regEmail" class="form-input" placeholder="example@email.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="regPassword">رمز عبور</label>
-                        <input type="password" id="regPassword" class="form-input" placeholder="رمز عبور خود را وارد کنید" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="regConfirmPassword">تکرار رمز عبور</label>
-                        <input type="password" id="regConfirmPassword" class="form-input" placeholder="رمز عبور خود را دوباره وارد کنید" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">ثبت نام</button>
-                        <button type="button" class="btn btn-secondary" onclick="switchToLogin()">حساب دارید؟ ورود</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <div class="modal city-selector-modal" id="citySelectorModal" role="dialog" aria-labelledby="city-title" aria-hidden="true">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="city-title">انتخاب شهر</h3>
-                    <button class="close-btn" onclick="closeCitySelector()" aria-label="بستن">×</button>
-                </div>
-                <div class="city-search">
-                    <input type="text" class="form-input" id="citySearchInput" placeholder="جستجوی شهر..." oninput="filterCities()">
-                </div>
-                <div class="city-list" id="cityList">
-                    <!-- Cities will be populated here -->
-                </div>
-            </div>
-        </div>
-        
-        <div class="toast" id="toast">
-            <span id="toastMessage"></span>
-        </div>
-
-        <!-- Business Submission Section (initially hidden) -->
-        <div id="addBusinessSection" class="modal business-modal hidden" role="dialog" aria-labelledby="add-business-title" aria-hidden="true">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="add-business-title">ثبت کسب و کار شما در کوره</h3>
-                    <button class="close-btn" onclick="closeModal(addBusinessSection)" aria-label="بستن">×</button>
-                </div>
-                <form id="businessForm">
-                    <div class="form-group">
-                        <label for="businessName" class="form-label">نام کسب و کار:</label>
-                        <input type="text" id="businessName" class="form-input" placeholder="نام کسب و کار خود را وارد کنید" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="businessCategory" class="form-label">دسته بندی:</label>
-                        <input type="text" id="businessCategory" class="form-input" placeholder="مثال: باشگاه بدنسازی، رستوران" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="businessDescription" class="form-label">توضیحات:</label>
-                        <textarea id="businessDescription" class="form-input" placeholder="توضیحات کامل کسب و کار" rows="4" required></textarea>
-                    </div>
-                            <div class="form-actions">
-            <button type="submit" class="btn btn-primary">ثبت کسب و کار</button>
-        </div>
-    </form>
-</div>
-
-<!-- AI Demo Link -->
-<div class="ai-demo-link" style="text-align: center; margin-top: 20px;">
-    <a href="./ai-demo.html" class="btn btn-secondary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; display: inline-block;">
-        🤖 نمایش قابلیت‌های هوش مصنوعی
-    </a>
-</div>
-        </div>
-
-    </div>
-    
-      <!-- Leaflet CSS and JS for Maps -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- Firebase SDKs - MUST be loaded BEFORE your main.js script -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <!-- <script src="./firebase-config.js"></script> -->
-    <!-- <script src="./ai-utils.js"></script> -->
-    
-    <!-- Neshan Maps Integration -->
-    <script src="./neshan-maps-integrated.js"></script>
-    
-    <script src="./main.js"></script>
-</body>
-</html>

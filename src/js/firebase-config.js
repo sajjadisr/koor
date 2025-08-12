@@ -3,15 +3,19 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
+import { getAnalytics } from 'firebase/analytics';
+import config from './config/environment.js';
+import logger from './utils/logger.js';
 
-// Firebase configuration
+// Firebase configuration from environment
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "your-api-key",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "your-project.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "your-project-id",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "your-project.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "your-app-id"
+  apiKey: config.FIREBASE.API_KEY,
+  authDomain: config.FIREBASE.AUTH_DOMAIN,
+  projectId: config.FIREBASE.PROJECT_ID,
+  storageBucket: config.FIREBASE.STORAGE_BUCKET,
+  messagingSenderId: config.FIREBASE.MESSAGING_SENDER_ID,
+  appId: config.FIREBASE.APP_ID,
+  measurementId: config.FIREBASE.MEASUREMENT_ID
 };
 
 // Initialize Firebase
@@ -19,6 +23,7 @@ let firebaseApp;
 let firestore;
 let auth;
 let storage;
+let analytics;
 
 export async function initializeFirebase() {
   try {
@@ -30,22 +35,32 @@ export async function initializeFirebase() {
     auth = getAuth(firebaseApp);
     storage = getStorage(firebaseApp);
     
+    // Initialize Analytics (only in production to avoid emulator issues)
+    if (config.PROD && config.FEATURES.ANALYTICS) {
+      try {
+        analytics = getAnalytics(firebaseApp);
+        logger.info('Firebase Analytics initialized');
+      } catch (error) {
+        logger.warn('Analytics not available:', error.message);
+      }
+    }
+    
     // Connect to emulators in development
-    if (import.meta.env.DEV) {
+    if (config.DEV) {
       try {
         connectFirestoreEmulator(firestore, 'localhost', 8080);
         connectAuthEmulator(auth, 'http://localhost:9099');
         connectStorageEmulator(storage, 'localhost', 9199);
-        console.log('Connected to Firebase emulators');
+        logger.info('Connected to Firebase emulators');
       } catch (error) {
-        console.log('Firebase emulators not available, using production services');
+        logger.info('Firebase emulators not available, using production services');
       }
     }
     
-    console.log('Firebase initialized successfully');
+    logger.info('Firebase initialized successfully');
     return true;
   } catch (error) {
-    console.error('Failed to initialize Firebase:', error);
+    logger.error('Failed to initialize Firebase:', error);
     return false;
   }
 }
@@ -70,6 +85,13 @@ export function getStorageInstance() {
     throw new Error('Firebase not initialized. Call initializeFirebase() first.');
   }
   return storage;
+}
+
+export function getAnalyticsInstance() {
+  if (!analytics) {
+    throw new Error('Analytics not available or Firebase not initialized.');
+  }
+  return analytics;
 }
 
 // Export the main Firebase app instance

@@ -1,0 +1,27 @@
+{
+  "name": "کوره - بهترین مکان رو پیدا کن",
+  "short_name": "کوره",
+  "description": "پلتفرم جستجو و کشف بهترین مکان‌های ایران",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3182ce",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "lifestyle", "travel"],
+  "lang": "fa",
+  "dir": "rtl"
+}

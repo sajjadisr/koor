@@ -1,0 +1,92 @@
+/* Persian Fonts for Kooreh App - Font Face Declarations */
+
+/* Vazir Font Family */
+@font-face {
+  font-family: 'Vazir';
+  src: url('./vazir-font-v18.0.0/Vazir.woff2') format('woff2'),
+       url('./vazir-font-v18.0.0/Vazir.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC;
+}
+
+@font-face {
+  font-family: 'Vazir';
+  src: url('./vazir-font-v18.0.0/Vazir-Bold.woff2') format('woff2'),
+       url('./vazir-font-v18.0.0/Vazir-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC;
+}
+
+@font-face {
+  font-family: 'Vazir';
+  src: url('./vazir-font-v18.0.0/Vazir-Light.woff2') format('woff2'),
+       url('./vazir-font-v18.0.0/Vazir-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC;
+}
+
+/* Tanha Font Family */
+@font-face {
+  font-family: 'Tanha';
+  src: url('./tanha-font-v0.9/Tanha.woff2') format('woff2'),
+       url('./tanha-font-v0.9/Tanha.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC;
+}
+
+/* Yekan Font Family */
+@font-face {
+  font-family: 'Yekan';
+  src: url('./yekan-font/yekan-regular.woff') format('woff'),
+       url('./yekan-font/yekan-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC;
+}
+
+/* Font Fallback Classes */
+.font-vazir {
+  font-family: 'Vazir', 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
+}
+
+.font-tanha {
+  font-family: 'Tanha', 'Vazir', 'Tahoma', 'Arial', sans-serif;
+}
+
+.font-yekan {
+  font-family: 'Yekan', 'Vazir', 'Tahoma', 'Arial', sans-serif;
+}
+
+/* Font Weight Utilities */
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* RTL Text Support */
+.rtl-text {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Vazir', 'Tanha', 'Tahoma', 'Arial', sans-serif;
+}
+
+/* Persian Number Support */
+.persian-numbers {
+  font-feature-settings: "ss01", "ss02", "ss03", "ss04", "ss05", "ss06", "ss07", "ss08", "ss09", "ss10";
+}

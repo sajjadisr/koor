@@ -1,137 +1,242 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Kooreh - Best Place Finder Platform for Iran</title>
-    <meta name="description" content="Discover the best places in Iran with Kooreh - your trusted platform for finding restaurants, attractions, and local businesses.">
-    <meta name="keywords" content="Iran, places, restaurants, attractions, local businesses, Kooreh">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  
-  <!-- Open Graph Meta Tags -->
-  <meta property="og:title" content="Kooreh - Best Place Finder Platform for Iran">
-  <meta property="og:description" content="Discover the best places in Iran with Kooreh">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kooreh.ir">
-  
-  <!-- Preload critical resources -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کوره - بهترین مکان رو پیدا کن</title>
+    <meta name="description" content="کوره - پلتفرم جستجو و کشف بهترین مکان‌های ایران. باشگاه، آرایشگاه، رستوران و بیشتر">
+    <meta name="keywords" content="کوره، باشگاه، آرایشگاه، رستوران، تهران، جستجو مکان">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="کوره - بهترین مکان رو پیدا کن">
+    <meta property="og:description" content="کوره - پلتفرم جستجو و کشف بهترین مکان‌های ایران. باشگاه، آرایشگاه، رستوران و بیشتر">
+    <meta property="og:image" content="./icon.png">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta property="og:type" content="website">
+    
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "کوره",
+      "url": "https://yourdomain.com",
+      "description": "پلتفرم جستجو و کشف بهترین مکان‌های ایران",
+      "applicationCategory": "Business Finder",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "IRR"
+      }
+    }
+    </script>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#3182ce">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="کوره">
+    
+    <!-- Icons for different platforms -->
+    <link rel="icon" type="image/png" href="./icon.png">
+    <link rel="apple-touch-icon" href="./icon.png">
+    <link rel="shortcut icon" href="./icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./icon.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Preload Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
+
+    <link rel="stylesheet" href="./style/main.css" type="text/css">
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
     <div class="container">
-      <div class="header-content">
-        <a href="/" class="logo">Kooreh</a>
-        <nav>
-          <ul class="nav-menu">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#places">Places</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
+        <header class="header">
+            <div class="header-top">
+                <a href="./index.html">
+                    <div class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <span class="logo-text">کوره</span>
+                    </div>
+                </a>
+                <button class="location-btn" onclick="openCitySelector()" aria-label="تغییر مکان">
+                    <svg class="location-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span id="currentLocation">تهران</span>
+                    <svg class="dropdown-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="دنبال چی می‌گردی؟" 
+                       oninput="handleSearch()" onblur="hideSearchSuggestions()"
+                       aria-label="جستجوی مکان">
+                <div class="search-suggestions" id="searchSuggestions">
+                    <!-- Suggestions will be populated dynamically -->
+                </div>
+            </div>
+        </header>
+        
+        <section class="categories" id="categoriesSection">
+            <h2 class="categories-title">چی دنبالشی؟</h2>
+            <div class="category-grid">
+                <div class="category-card" data-category="gym" onclick="selectCategory('gym')" 
+                     tabindex="0" role="button" aria-label="انتخاب باشگاه">
+                    <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L22 18.14l1.43-1.43L18.29 22l-1.43-1.43L20.57 18.14z"/>
+                    </svg>
+                    <span class="category-name">باشگاه</span>
+                </div>
+                <div class="category-card" data-category="salon" onclick="selectCategory('salon')"
+                     tabindex="0" role="button" aria-label="انتخاب آرایشگاه">
+                    <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    <span class="category-name">آرایشگاه</span>
+                </div>
+                <div class="category-card" data-category="barber" onclick="selectCategory('barber')"
+                     tabindex="0" role="button" aria-label="انتخاب آرایشگاه مردانه">
+                    <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    <span class="category-name">آرایشگاه مردانه</span>
+                </div>
+                <div class="category-card" data-category="school" onclick="selectCategory('school')"
+                     tabindex="0" role="button" aria-label="انتخاب آموزشگاه">
+                    <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09v6.91L12 23l-9-4.82V9l9-6z"/>
+                    </svg>
+                    <span class="category-name">آموزشگاه</span>
+                </div>
+                <div class="category-card" data-category="clinic" onclick="selectCategory('clinic')"
+                     tabindex="0" role="button" aria-label="انتخاب کلینیک">
+                    <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 16H6c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h12c.55 0 1 .45 1 1v12c0 .55-.45 1-1 1z"/>
+                        <path d="M10 7h4v2h-4zM10 11h4v2h-4zM10 15h4v2h-4z"/>
+                    </svg>
+                    <span class="category-name">کلینیک</span>
+                </div>
+                <div class="category-card" data-category="restaurant" onclick="selectCategory('restaurant')"
+                     tabindex="0" role="button" aria-label="انتخاب رستوران">
+                    <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"/>
+                    </svg>
+                    <span class="category-name">رستوران</span>
+                </div>
+            </div>
+        </section>
+        
+        <section class="results-section" id="resultsSection" style="display: none;">
+            <div class="results-header">
+                <div>
+                    <h3 class="results-title" id="resultsTitle">باشگاه‌های تهران</h3>
+                    <div class="results-count" id="resultsCount">۱۲ نتیجه یافت شد</div>
+                </div>
+                <button class="filter-btn" onclick="openFilters()" aria-label="باز کردن فیلترها">
+                    <svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+                    </svg>
+                    <span>فیلتر</span>
+                </button>
+            </div>
+            <div id="placesContainer">
+                <!-- Place cards will be dynamically inserted here -->
+            </div>
+        </section>
+        
+        <section class="search-page" id="searchPage">
+            <div class="search-header">
+                <h2 class="search-title">جستجو در کوره</h2>
+                <p>بهترین مکان‌ها را پیدا کنید</p>
+            </div>
+            
+            <div class="recent-searches">
+                <h3 class="recent-title">جستجوهای اخیر</h3>
+                <div class="search-chips">
+                    <div class="search-chip" onclick="selectSuggestion('باشگاه بدنسازی')">
+                        <svg class="chip-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <span>باشگاه بدنسازی</span>
+                    </div>
+                    <div class="search-chip" onclick="selectSuggestion('سالن آرایش')">
+                        <svg class="chip-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <span>سالن آرایش</span>
+                    </div>
+                    <div class="search-chip" onclick="selectSuggestion('رستوران ایرانی')">
+                        <svg class="chip-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"/>
+                        </svg>
+                        <span>رستوران ایرانی</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="popular-searches">
+                <h3 class="popular-title">جستجوهای پرطرفدار</h3>
+                <div class="search-chips">
+                    <div class="search-chip" onclick="selectSuggestion('آرایشگاه زنانه')">آرایشگاه زنانه</div>
+                    <div class="search-chip" onclick="selectSuggestion('کافه')">کافه</div>
+                    <div class="search-chip" onclick="selectSuggestion('آموزشگاه زبان')">آموزشگاه زبان</div>
+                    <div class="search-chip" onclick="selectSuggestion('کلینیک دندان')">کلینیک دندان</div>
+                    <div class="search-chip" onclick="selectSuggestion('باشگاه فیتنس')">باشگاه فیتنس</div>
+                    <div class="search-chip" onclick="selectSuggestion('رستوران فست فود')">رستوران فست فود</div>
+                </div>
+            </div>
+        </section>
+        
+        <nav class="bottom-nav" role="navigation" aria-label="ناوبری اصلی">
+            <div class="nav-item active" onclick="selectNavItem(this, 'home')" 
+                 tabindex="0" role="button" aria-label="خانه">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                <span class="nav-label">خانه</span>
+            </div>
+            <div class="nav-item" onclick="selectNavItem(this, 'search')"
+                 tabindex="0" role="button" aria-label="جستجو">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <span class="nav-label">جستجو</span>
+            </div>
+            <div class="nav-item" onclick="selectNavItem(this, 'favorites')"
+                 tabindex="0" role="button" aria-label="علاقه‌مندی‌ها">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span class="nav-label">علاقه‌مندی‌ها</span>
+            </div>
+            <div class="nav-item" onclick="selectNavItem(this, 'profile')"
+                 tabindex="0" role="button" aria-label="پروفایل">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <span class="nav-label">پروفایل</span>
+            </div>
         </nav>
-      </div>
+        
+        <div class="toast" id="toast">
+            <span id="toastMessage"></span>
+        </div>
     </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="main-content">
-    <div class="container">
-      <!-- Hero Section -->
-      <section id="home" class="hero-section">
-        <div class="card text-center">
-          <h1 class="hero-title">Welcome to Kooreh</h1>
-          <p class="hero-subtitle">Discover the best places in Iran</p>
-          <div class="hero-actions">
-            <button class="btn btn-primary" id="searchBtn">Search Places</button>
-            <button class="btn btn-secondary" id="exploreBtn">Explore</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Search Section -->
-      <section id="search" class="search-section">
-        <div class="card">
-          <h2 class="card-title">Find Your Perfect Place</h2>
-          <form id="searchForm" class="search-form">
-            <div class="form-group">
-              <label for="location" class="form-label">Location</label>
-              <input type="text" id="location" class="form-input" placeholder="Enter city or area" required>
-            </div>
-            <div class="form-group">
-              <label for="category" class="form-label">Category</label>
-              <select id="category" class="form-input">
-                <option value="">All Categories</option>
-                <option value="restaurant">Restaurants</option>
-                <option value="cafe">Cafes</option>
-                <option value="hotel">Hotels</option>
-                <option value="attraction">Attractions</option>
-                <option value="shopping">Shopping</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Search</button>
-          </form>
-        </div>
-      </section>
-
-      <!-- Results Section -->
-      <section id="results" class="results-section" style="display: none;">
-        <div class="card">
-          <h2 class="card-title">Search Results</h2>
-          <div id="resultsContainer" class="results-container">
-            <!-- Results will be populated here -->
-          </div>
-        </div>
-      </section>
-
-      <!-- About Section -->
-      <section id="about" class="about-section">
-        <div class="card">
-                  <h2 class="card-title">About Kooreh</h2>
-        <p>Kooreh is your trusted platform for discovering the best places in Iran. Whether you're looking for restaurants, cafes, hotels, or attractions, we provide comprehensive information and reviews to help you make the best choices.</p>
-          <div class="features-grid">
-            <div class="feature">
-              <h3>Comprehensive Database</h3>
-              <p>Access thousands of places across Iran with detailed information.</p>
-            </div>
-            <div class="feature">
-              <h3>Real Reviews</h3>
-              <p>Read authentic reviews from real visitors and customers.</p>
-            </div>
-            <div class="feature">
-              <h3>Easy Navigation</h3>
-              <p>Find what you're looking for quickly with our intuitive search.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <p>&copy; 2024 Kooreh. All rights reserved.</p>
-        <div class="footer-links">
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/terms">Terms of Service</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Loading indicator -->
-  <div id="loading" class="loading" style="display: none;">
-    <div class="loading-spinner"></div>
-    <p>Loading...</p>
-  </div>
-
-  <!-- Scripts -->
-  <script type="module" src="./main.js"></script>
+    
+    <script type="module" src="./main.js"></script>
 </body>
 </html>

@@ -3,8 +3,8 @@
  * The Admin SDK is crucial for interacting with Firebase services
  * on the backend without user authentication.
  */
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+import functions from 'firebase-functions';
+import admin from 'firebase-admin';
 
 // Initialize the Firebase Admin SDK.
 // This allows your functions to interact with Firestore, Auth, etc.
@@ -17,7 +17,7 @@ admin.initializeApp();
  * It's useful for client-server communication without needing
  * to set up a full REST API.
  */
-exports.helloWorld = functions.https.onCall((data, context) => {
+export const helloWorld = functions.https.onCall((data, context) => {
     // Check if the user is authenticated (optional, depends on your use case)
     if (!context.auth) {
         // Throwing an HttpsError will send a structured error back to the client
@@ -42,7 +42,7 @@ exports.helloWorld = functions.https.onCall((data, context) => {
  * This function responds to standard HTTP GET/POST requests.
  * You can access it via its URL after deployment.
  */
-exports.currentTime = functions.https.onRequest((request, response) => {
+export const currentTime = functions.https.onRequest((request, response) => {
     // Set CORS headers for all responses to allow requests from any origin
     response.set('Access-Control-Allow-Origin', '*'); // Adjust for production environments
     response.set('Access-Control-Allow-Methods', 'GET, POST');
@@ -69,7 +69,7 @@ exports.currentTime = functions.https.onRequest((request, response) => {
  * in the 'globalCounters' collection changes.
  * It demonstrates how to listen for database changes.
  */
-exports.onCounterUpdate = functions.firestore
+export const onCounterUpdate = functions.firestore
     .document('artifacts/{appId}/public/data/globalCounters/mainCounter')
     .onUpdate(async (change, context) => {
         const newValue = change.after.data();
